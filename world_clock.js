@@ -139,7 +139,7 @@ function updateDayOffsetLabels(now) {
             CONFIG.myTimezone,
             timeZone,
             now
-        );
+        ) ?? '?!';
     }
 }
 
@@ -164,5 +164,5 @@ function render(now = new Date()) {
 export function startWorldClock(now = new Date()) {
     cacheElements();
     render(now);
-    setInterval(() => render(new Date()), CONFIG.refresh1minInterval);
+    setInterval(() => render(new Date()), CONFIG.refreshUnitInterval);
 }

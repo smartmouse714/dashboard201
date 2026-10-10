@@ -3,7 +3,7 @@
  */
 export const CONFIG = {
     myTimezone: "Australia/Melbourne",
-    refresh1minInterval: 60_000,
+    refreshUnitInterval: 60_000, // 1 minute
     colors: {
         black: "#444",
         white: "#fff"
@@ -97,9 +97,15 @@ export const DST_RULES = Object.fromEntries(
 /**
  * API endpoints
  */
-export const TeamViewerURL = "https://status.teamviewer.com/api/v2/summary.json";
-export const HolidayAPI_BASE = "https://date.nager.at/api/v3/PublicHolidays";
-export const CATALOG = [
+const repos = {
+    "Coreutils for Windows": "microsoft/coreutils",
+    "Deno": "denoland/deno/",
+    "Notepad++": "notepad-plus-plus/notepad-plus-plus",
+    "PowerShell": "PowerShell/PowerShell",
+    "Windows Terminal": "microsoft/terminal"
+};
+/**
+GH_CATALOG = [
     {
         title: "Coreutils for Windows",
         url: "https://api.github.com/repos/microsoft/coreutils/releases/latest"
@@ -117,3 +123,10 @@ export const CATALOG = [
         url: "https://api.github.com/repos/microsoft/terminal/releases/latest"
     }
 ];
+ */
+export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
+    title,
+    url: `https://api.github.com/repos/${repo}/releases/latest`
+}));
+export const TeamViewerURL = "https://status.teamviewer.com/api/v2/summary.json";
+export const HolidayAPI_BASE = "https://date.nager.at/api/v3/PublicHolidays";

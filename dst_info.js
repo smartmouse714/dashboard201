@@ -1,4 +1,5 @@
 import {
+    CONFIG,
     DST_RULES,
     DST_ZONES
 } from "./config.js";
@@ -180,19 +181,15 @@ function refreshCountdowns(now = new Date()) {
                     break;
                 default:
                     const meter = document.createElement("meter");
-                    meter.min = 0;
-                    meter.max = 183;
+                    meter.min =       0;
+                    meter.low =      30;
+                    meter.optimum =  90;
+                    meter.high =    150;
+                    meter.max =     183;
                     meter.value = Number(days);
-                    meter.low = 30;
-                    meter.high = 90;
-                    meter.optimum = 183;
                     meter.setAttribute("aria-label", "Days until next time change");
-
                     const v = Number(days);
-                    meter.className = v < 30 ? "meter-critical"
-                        : v < 90 ? "meter-warn"
-                            : "meter-ok";
-
+                    meter.className = v < meter.low ? "meter-critical" : v < meter.optimum ? "meter-warn" : "meter-ok";
                     el.replaceChildren("Countdown ", meter, ` ${days} days`);
             }
         });
@@ -283,5 +280,5 @@ function updateDSTUI({ au, ca, nz, uk }) {
 export function startDSTInfo(now = new Date()) {
     updateDSTUI(getDSTDetails(now));
     refreshCountdowns(now);
-    setInterval(() => refreshCountdowns(new Date()), 60_000);
+    setInterval(() => refreshCountdowns(new Date()), CONFIG.refreshUnitInterval);
 }

@@ -49,7 +49,9 @@ export function dayOffsetLabel(referenceZone, targetZone, date = new Date()) {
             return "Tomorrow";
         case -1:
             return "Yesterday";
+        case 0:
+            return ""; // Today
         default:
-            return "";
+            return null; // Something is wrong
     }
 }

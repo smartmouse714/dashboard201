@@ -1,6 +1,6 @@
 import {
     CONFIG,
-    CATALOG,
+    GH_CATALOG,
     TeamViewerURL
 } from "./config.js";
 
@@ -20,7 +20,7 @@ async function getSoftwareVersion() {
             <tbody>
     `;
 
-    for (const { title, url } of CATALOG) {
+    for (const { title, url } of GH_CATALOG) {
         try {
             const response = await fetch(url);
             const release = await response.json();
@@ -122,7 +122,7 @@ function refreshAllStatuses() {
     updateTeamViewerStatus();
 }
 
-const refresh30minInterval = CONFIG.refresh1minInterval * 30;
+const refresh30minInterval = CONFIG.refreshUnitInterval * 30;
 
 export function startStatus() {
     // Load version once on page load or if cache expired
