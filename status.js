@@ -1,5 +1,7 @@
 import {
+    ALERTS_CATALOG,
     CONFIG,
+    FirefoxURI,
     GH_CATALOG,
     TeamViewerURL
 } from "./config.js";
@@ -23,6 +25,9 @@ async function getSoftwareVersion() {
     for (const { title, url } of GH_CATALOG) {
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
             const release = await response.json();
 
             html += `
@@ -42,23 +47,32 @@ async function getSoftwareVersion() {
         }
     }
 
-    const response = await fetch(
-        "https://product-details.mozilla.org/1.0/firefox_versions.json"
-    );
-    const data = await response.json();
-    html += `
+    try {
+        const response = await fetch(FirefoxURI.url);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        const release = await response.json();
+        html += `
         <tr>
-            <td>Mozilla Firefox</td>
-            <td>${data.LATEST_FIREFOX_VERSION}</td>
-            <td>${data.LAST_RELEASE_DATE}</td>
+            <td>${FirefoxURI.title}</td>
+            <td>${release.LATEST_FIREFOX_VERSION}</td>
+            <td>${release.LAST_RELEASE_DATE}</td>
         </tr>
     `;
+    } catch {
+        html += `
+                <tr>
+                    <td>${FirefoxURI.title}/td>
+                    <td colspan="2">Unknown</td>
+                </tr>
+            `;
+    }
 
     html += `
             </tbody>
         </table>
     `;
-
     return html;
 }
 
@@ -82,7 +96,7 @@ async function loadSoftwareVersion() {
 
     const html = await getSoftwareVersion();
     el.innerHTML = html;
-    
+
     localStorage.setItem(
         VERSION_CACHE_KEY,
         JSON.stringify({
@@ -118,8 +132,47 @@ async function updateTeamViewerStatus() {
     }
 }
 
+/**
+ * VIC Earthquakes
+ * @returns
+ */
+async function getEarthquakes() {
+    const el = document.getElementById("teamviewerStatus");
+    if (!el) return;
+
+    const { eventType, url } = ALERTS_CATALOG;
+    // console.log(eventType, url);
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        const event = "earthquake";
+        const earthquakes = data.features
+            .filter(feature => feature.properties?.feedType === event)
+            .map(feature => ({
+                date: feature.properties.created,
+                area: feature.properties.location
+            }));
+        if (earthquakes.length > 0) {
+            el.textContent = earthquakes
+                .map(eq => `${eq.date} - ${eq.area}`)
+                .join(' | ');
+        } else {
+            el.textContent = "N/A";
+        }
+        // console.table(earthquakes);
+    } catch {
+        el.textContent = `${eventType} not found`;
+    }
+}
+// getEarthquakes();
+
 function refreshAllStatuses() {
     updateTeamViewerStatus();
+
+    getEarthquakes();
 }
 
 const refresh30minInterval = CONFIG.refreshUnitInterval * 30;

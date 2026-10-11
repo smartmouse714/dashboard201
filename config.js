@@ -98,17 +98,24 @@ export const DST_RULES = Object.fromEntries(
  * Holiday filters
  */
 export const REGIONS = [
-    { country: "CA", subdivision: "CA-AB",  label: "Calgarians" },
+    { country: "CA", subdivision: "CA-AB", label: "Calgarians" },
     { country: "GB", subdivision: "GB-ENG", label: "Londoners" },
     { country: "AU", subdivision: "AU-VIC", label: "Melburnians" }
 ];
 
+export const HolidayAPI_BASE = "https://date.nager.at/api/v3/PublicHolidays";
+
 /**
  * API endpoints
  */
+export const FirefoxURI = {
+    title: "Mozilla Firefox",
+    url: "https://product-details.mozilla.org/1.0/firefox_versions.json"
+};
+
 const repos = {
     "Coreutils for Windows": "microsoft/coreutils",
-    "Deno": "denoland/deno/",
+    "Deno": "denoland/deno",
     "Notepad++": "notepad-plus-plus/notepad-plus-plus",
     "PowerShell": "PowerShell/PowerShell",
     "Windows Terminal": "microsoft/terminal"
@@ -141,5 +148,8 @@ export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
     title,
     url: `https://api.github.com/repos/${repo}/releases/latest`
 }));
+export const ALERTS_CATALOG = {
+    eventType: "VicEarthquakes",
+    url: "https://emergency.vic.gov.au/public/events-geojson.json"
+}
 export const TeamViewerURL = "https://status.teamviewer.com/api/v2/summary.json";
-export const HolidayAPI_BASE = "https://date.nager.at/api/v3/PublicHolidays";
