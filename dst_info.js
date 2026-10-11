@@ -173,24 +173,28 @@ function refreshCountdowns(now = new Date()) {
 
         document.querySelectorAll(selector).forEach(el => {
             switch (days) {
-                case null:
+                case null: {
                     el.textContent = "Something is wrong";
                     break;
-                case 0:
+                }
+                case 0: {
                     el.textContent = "Time change is occurring now";
                     break;
-                default:
+                }
+                default: {
                     const meter = document.createElement("meter");
-                    meter.min =       0;
-                    meter.low =      30;
-                    meter.optimum =  90;
-                    meter.high =    150;
-                    meter.max =     183;
+                    meter.min = 0;
+                    meter.low = 30;
+                    meter.optimum = 90;
+                    meter.high = 150;
+                    meter.max = 183;
                     meter.value = Number(days);
                     meter.setAttribute("aria-label", "Days until next time change");
                     const v = Number(days);
                     meter.className = v < meter.low ? "meter-critical" : v < meter.optimum ? "meter-warn" : "meter-ok";
                     el.replaceChildren("Countdown ", meter, ` ${days} days`);
+                    break;
+                }
             }
         });
     }

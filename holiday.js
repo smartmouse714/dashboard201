@@ -4,13 +4,10 @@
  * Fetches from Nager.Date API and caches by year+country.
  * If none this month, show nothing.
  */
-import { HolidayAPI_BASE } from "./config.js";
-
-const REGIONS = [
-    { country: "CA", subdivision: "CA-AB",  label: "Calgarians" },
-    { country: "GB", subdivision: "GB-ENG", label: "Londoners" },
-    { country: "AU", subdivision: "AU-VIC", label: "Melburnians" }
-];
+import {
+    HolidayAPI_BASE,
+    REGIONS
+} from "./config.js";
 
 const cache = new Map();
 

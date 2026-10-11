@@ -343,7 +343,7 @@ time {
 .holiday {
     margin-top: 14px;
     padding: 12px 14px;
-    background: var(--color-bg-card);
+    /* background: var(--color-bg-card); */
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
@@ -378,6 +378,11 @@ time {
     color: var(--color-text);
 }
 
+.holiday-item mark {
+    font-variant: small-caps;
+    color: rgba(255, 127, 127, 0.75);
+    background-color: rgba(127, 127, 31, 0.25);
+}
 
 /* ==========================================================================
    13. Vendor Status

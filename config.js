@@ -27,7 +27,7 @@ DST_ZONES = {
     CA: "America/Denver",
     NZ: "Pacific/Auckland",
     UK: "Europe/London"
-}; 
+};
  */
 export const DST_ZONES = Object.fromEntries(
     TIMEZONES
@@ -36,7 +36,7 @@ export const DST_ZONES = Object.fromEntries(
 );
 
 /**
- * DST Rules:
+ * DST rules:
  *   NZ  – starts last Sunday of September, ends first Sunday of April
  *   AU  – starts first Sunday of October,  ends first Sunday of April
  *   UK  – starts last Sunday of March,     ends last Sunday of October
@@ -95,6 +95,15 @@ export const DST_RULES = Object.fromEntries(
 );
 
 /**
+ * Holiday filters
+ */
+export const REGIONS = [
+    { country: "CA", subdivision: "CA-AB",  label: "Calgarians" },
+    { country: "GB", subdivision: "GB-ENG", label: "Londoners" },
+    { country: "AU", subdivision: "AU-VIC", label: "Melburnians" }
+];
+
+/**
  * API endpoints
  */
 const repos = {
@@ -109,6 +118,10 @@ GH_CATALOG = [
     {
         title: "Coreutils for Windows",
         url: "https://api.github.com/repos/microsoft/coreutils/releases/latest"
+    },
+    {
+        title: "Deno",
+        url: "https://api.github.com/repos/denoland/deno/releases/latest"
     },
     {
         title: "Notepad++",
