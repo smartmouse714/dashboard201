@@ -137,7 +137,7 @@ async function updateTeamViewerStatus() {
  * @returns
  */
 async function getEarthquakes() {
-    const el = document.getElementById("teamviewerStatus");
+    const el = document.getElementById("vicEarthquakeStatus");
     if (!el) return;
 
     const { eventType, url } = ALERTS_CATALOG;
@@ -160,11 +160,11 @@ async function getEarthquakes() {
                 .map(eq => `${eq.date} - ${eq.area}`)
                 .join(' | ');
         } else {
-            el.textContent = "N/A";
+            el.textContent = "No earthquake";
         }
         // console.table(earthquakes);
     } catch {
-        el.textContent = `${eventType} not found`;
+        el.textContent = `Error: ${eventType}`;
     }
 }
 // getEarthquakes();
