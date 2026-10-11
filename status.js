@@ -141,7 +141,6 @@ async function getEarthquakes() {
     if (!el) return;
 
     const { eventType, url } = ALERTS_CATALOG;
-    // console.log(eventType, url);
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -157,17 +156,15 @@ async function getEarthquakes() {
             }));
         if (earthquakes.length > 0) {
             el.textContent = earthquakes
-                .map(eq => `${eq.date} - ${eq.area}`)
-                .join(' | ');
+                .map(row => `${row.date} - ${row.area}`)
+                .join('\n');
         } else {
             el.textContent = "No earthquake";
         }
-        // console.table(earthquakes);
     } catch {
         el.textContent = `Error: ${eventType}`;
     }
 }
-// getEarthquakes();
 
 function refreshAllStatuses() {
     updateTeamViewerStatus();
