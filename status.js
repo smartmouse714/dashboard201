@@ -157,8 +157,8 @@ async function getEarthquakes() {
             }));
         if (earthquakes.length > 0) {
             el.textContent = earthquakes
-                .map(eq => `${eq.date} - ${eq.area}`)
-                .join(' | ');
+                .map(eqk => `${eqk.date} - ${eqk.area}`)
+                .join('\n');
         } else {
             el.textContent = "No earthquake";
         }
