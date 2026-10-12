@@ -3,7 +3,7 @@ import {
     CONFIG,
     FirefoxURI,
     GH_CATALOG,
-    TeamViewerURL
+    VENDOR_CATALOG
 } from "./config.js";
 
 /**
@@ -113,6 +113,7 @@ async function loadSoftwareVersion() {
 async function updateTeamViewerStatus() {
     const el = document.getElementById("teamviewerStatus");
     if (!el) return;
+    const TeamViewerURL = VENDOR_CATALOG[0].product;
 
     try {
         const response = await fetch(TeamViewerURL);
@@ -140,9 +141,9 @@ async function getEarthquakes() {
     const el = document.getElementById("vicEarthquakeStatus");
     if (!el) return;
 
-    const { eventType, url } = ALERTS_CATALOG;
+    const { eventType, od_url, eg_url } = ALERTS_CATALOG;
     try {
-        const response = await fetch(url);
+        const response = await fetch(eg_url);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }

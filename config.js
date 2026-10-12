@@ -149,7 +149,13 @@ export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
     url: `https://api.github.com/repos/${repo}/releases/latest`
 }));
 export const ALERTS_CATALOG = {
-    eventType: "VicEarthquakes",
-    url: "https://emergency.vic.gov.au/public/events-geojson.json"
+    eventType: ["earthquake", "weather"],
+    od_url: "https://emergency.vic.gov.au/public/osom-delta.json",
+    eg_url: "https://emergency.vic.gov.au/public/events-geojson.json"
 }
-export const TeamViewerURL = "https://status.teamviewer.com/api/v2/summary.json";
+export const VENDOR_CATALOG = [
+    { product: "TeamViewe", url: "https://status.teamviewer.com/api/v2/summary.json" },
+    { product: "SendGrid", url: "https://status.twilio.com/api/v2/status.json" },
+    { product: "WebEx", url: "https://status.webex.com/status.json" }
+];
+

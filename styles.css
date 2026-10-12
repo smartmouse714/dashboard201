@@ -49,7 +49,7 @@
    ========================================================================== */
 
 html {
-    font-size: 20px;
+    font-size: 14px;
 }
 
 body {
@@ -124,10 +124,10 @@ body {
 }
 
 .column-heading {
-    font-size: 1.12rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.01em;
-    padding: 10px 0;
+    padding: 7px 0;
     margin: 0 0 4px;
     border-radius: 0;
     min-height: 53px;
@@ -184,7 +184,7 @@ body {
 
 time {
     display: block;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--color-text);
     font-variant-numeric: tabular-nums;
@@ -206,16 +206,16 @@ time {
     border: 1.5px solid var(--color-btn-border);
     background: transparent;
     color: var(--color-btn-text);
-    font-size: 0.75rem;          /* fixed, not em → same size in both contexts */
+    font-size: 0.75rem;         /* fixed, not em → same size in both contexts */
     font-weight: 700;
     padding: 0;
     line-height: 1;
-    display: inline-flex;         /* centres the “i” reliably */
+    display: inline-flex;       /* centres the “i” reliably */
     align-items: center;
     justify-content: center;
     margin-left: 0.35em;
-    vertical-align: middle;       /* better than baseline + top offset */
-    position: static;             /* drop the relative + top hack */
+    vertical-align: middle;     /* better than baseline + top offset */
+    position: static;           /* drop the relative + top hack */
     cursor: pointer;
     transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
@@ -345,14 +345,14 @@ time {
    ========================================================================== */
 
 .holiday {
-    margin-top: 14px;
-    padding: 12px 14px;
+    margin-top: 8px;
+    padding: 8px 10px;
     /* background: var(--color-bg-card); */
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     text-align: left;
-    width: 88%;
+    width: fit-content;
 }
 
 .holiday-region-group {
@@ -384,8 +384,8 @@ time {
 
 .holiday-item mark {
     font-variant: small-caps;
-    color: rgba(255, 127, 127, 0.75);
-    background-color: rgba(127, 127, 31, 0.25);
+    color: rgba(255, 127, 127, 0.9);
+    background-color: rgba(127, 127, 31, 0.1);
 }
 
 /* ==========================================================================
@@ -418,7 +418,7 @@ time {
 
 #latestVersion th,
 #latestVersion td {
-    padding: 4px 8px;
+    padding: 2px 3px;
 }
 
 /* ==========================================================================
