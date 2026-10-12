@@ -113,7 +113,7 @@ async function loadSoftwareVersion() {
 async function updateTeamViewerStatus() {
     const el = document.getElementById("teamviewerStatus");
     if (!el) return;
-    const TeamViewerURL = VENDOR_CATALOG[0].product;
+    const TeamViewerURL = VENDOR_CATALOG[0].url;
 
     try {
         const response = await fetch(TeamViewerURL);
@@ -148,22 +148,23 @@ async function getEarthquakes() {
             throw new Error(`HTTP ${response.status}`);
         }
         const data = await response.json();
-        const event = "earthquake";
-        const earthquakes = data.features
-            .filter(feature => feature.properties?.feedType === event)
-            .map(feature => ({
-                date: feature.properties.created,
-                area: feature.properties.location
-            }));
-        if (earthquakes.length > 0) {
-            el.textContent = earthquakes
-                .map(row => `${row.date} - ${row.area}`)
-                .join('\n');
-        } else {
-            el.textContent = "No earthquake";
+        for (const event of eventType) {
+            const earthquakes = data.features
+                .filter(feature => feature.properties?.feedType === event)
+                .map(feature => ({
+                    date: feature.properties.created,
+                    area: feature.properties.location
+                }));
+            if (earthquakes.length > 0) {
+                el.textContent = earthquakes
+                    .map(row => `${row.date} - ${row.area}`)
+                    .join('\n');
+            } else {
+                el.textContent = `No ${event}`;
+            }
+        } catch {
+            el.textContent = `Error: ${eventType}`;
         }
-    } catch {
-        el.textContent = `Error: ${eventType}`;
     }
 }
 
