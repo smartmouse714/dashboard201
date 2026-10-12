@@ -154,7 +154,7 @@ export const ALERTS_CATALOG = {
     eg_url: "https://emergency.vic.gov.au/public/events-geojson.json"
 }
 export const VENDOR_CATALOG = [
-    { product: "TeamViewe", url: "https://status.teamviewer.com/api/v2/summary.json" },
+    { product: "TeamViewer", url: "https://status.teamviewer.com/api/v2/summary.json" },
     { product: "SendGrid", url: "https://status.twilio.com/api/v2/status.json" },
     { product: "WebEx", url: "https://status.webex.com/status.json" }
 ];

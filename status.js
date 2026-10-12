@@ -113,23 +113,29 @@ async function loadSoftwareVersion() {
 async function updateTeamViewerStatus() {
     const el = document.getElementById("teamviewerStatus");
     if (!el) return;
-    const TeamViewerURL = VENDOR_CATALOG[0].url;
 
-    try {
-        const response = await fetch(TeamViewerURL);
-        const data = await response.json();
+    for (const vendor of VENDOR_CATALOG) {
+        if (vendor.product === "TeamViewer") {
+            try {
+                const response = await fetch(vendor.url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
 
-        if (!data.incidents || data.incidents.length === 0) {
-            el.textContent = "OK";
-            el.className = "status-ok";
-        } else {
-            el.textContent = data.incidents
-                .map(i => i.name)
-                .join(", ");
-            el.className = "status-incident";
+                if (!data.incidents || data.incidents.length === 0) {
+                    el.textContent = "OK";
+                    el.className = "status-ok";
+                } else {
+                    el.textContent = data.incidents
+                        .map(i => i.name)
+                        .join(", ");
+                    el.className = "status-incident";
+                }
+            } catch {
+                el.textContent = "Status Unknown";
+            }
         }
-    } catch {
-        el.textContent = "Status Unknown";
     }
 }
 
@@ -148,23 +154,22 @@ async function getEarthquakes() {
             throw new Error(`HTTP ${response.status}`);
         }
         const data = await response.json();
-        for (const event of eventType) {
-            const earthquakes = data.features
-                .filter(feature => feature.properties?.feedType === event)
-                .map(feature => ({
-                    date: feature.properties.created,
-                    area: feature.properties.location
-                }));
-            if (earthquakes.length > 0) {
-                el.textContent = earthquakes
-                    .map(row => `${row.date} - ${row.area}`)
-                    .join('\n');
-            } else {
-                el.textContent = `No ${event}`;
-            }
-        } catch {
-            el.textContent = `Error: ${eventType}`;
+        const event = "earthquake";
+        const earthquakes = data.features
+            .filter(feature => feature.properties?.feedType === event)
+            .map(feature => ({
+                date: feature.properties.created,
+                area: feature.properties.location
+            }));
+        if (earthquakes.length > 0) {
+            el.textContent = earthquakes
+                .map(row => `${row.date} - ${row.area}`)
+                .join('\n');
+        } else {
+            el.textContent = "No earthquake";
         }
+    } catch {
+        el.textContent = `Error: ${eventType}`;
     }
 }
 
