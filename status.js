@@ -110,31 +110,87 @@ async function loadSoftwareVersion() {
  * TeamViewer
  * @returns 
  */
-async function updateTeamViewerStatus() {
+async function updateVendorStatus() {
     const el = document.getElementById("teamviewerStatus");
     if (!el) return;
 
     for (const vendor of VENDOR_CATALOG) {
-        if (vendor.product === "TeamViewer") {
-            try {
-                const response = await fetch(vendor.url);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                const data = await response.json();
+        switch (vendor.product) {
+            case "TeamViewer":
+                try {
+                    const response = await fetch(vendor.url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    const data = await response.json();
 
-                if (!data.incidents || data.incidents.length === 0) {
-                    el.textContent = "OK";
-                    el.className = "status-ok";
-                } else {
-                    el.textContent = data.incidents
-                        .map(i => i.name)
-                        .join(", ");
-                    el.className = "status-incident";
+                    if (!data.incidents || data.incidents.length === 0) {
+                        el.textContent = "OK";
+                        el.className = "status-ok";
+                    } else {
+                        el.textContent = data.incidents
+                            .map(i => i.name)
+                            .join(", ");
+                        el.className = "status-incident";
+                    }
+                } catch {
+                    el.textContent = "Status Unknown";
                 }
-            } catch {
-                el.textContent = "Status Unknown";
-            }
+                break;
+            case "SendGrid":
+                try {
+                    const response = await fetch(vendor.url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    const data = await response.json();
+
+
+                    switch (data.status.indicator) {
+                        case "green":
+                            el.textContent = "OK";
+                            el.className = "status-ok";
+                            break;
+                        case "yellow":
+                            el.textContent = "OK";
+                            el.className = "status-ok";
+                            break;
+                        case "red":
+                            el.textContent = "OK";
+                            el.className = "status-ok";
+                            break;
+                        default:
+                            el.textContent = data.incidents
+                                .map(i => i.name)
+                                .join(", ");
+                            el.className = "status-incident";
+                    }
+                } catch {
+                    el.textContent = "Status Unknown";
+                }
+                break;
+            case "WebEx":
+                try {
+                    const response = await fetch(vendor.url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    if (!data.incidents || data.incidents.length === 0) {
+                        el.textContent = "OK";
+                        el.className = "status-ok";
+                    } else {
+                        el.textContent = data.incidents
+                            .map(i => i.name)
+                            .join(", ");
+                        el.className = "status-incident";
+                    }
+                } catch {
+                    el.textContent = "Status Unknown";
+                }
+                break;
+            default:
         }
     }
 }
@@ -174,7 +230,7 @@ async function getEarthquakes() {
 }
 
 function refreshAllStatuses() {
-    updateTeamViewerStatus();
+    updateVendorStatus();
 
     getEarthquakes();
 }
