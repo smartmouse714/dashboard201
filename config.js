@@ -149,7 +149,8 @@ export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
     url: `https://api.github.com/repos/${repo}/releases/latest`
 }));
 export const ALERTS_CATALOG = {
-    eventType: ["earthquake", "weather"],
+    // eventType: ["Earthquake", "Fire", "Incident", "Weather"].map(x => x.toLowerCase()),
+    eventType: ["Earthquake", "Fire", "Incident", "Weather"],
     od_url: "https://emergency.vic.gov.au/public/osom-delta.json",
     eg_url: "https://emergency.vic.gov.au/public/events-geojson.json"
 }

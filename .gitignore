@@ -8,6 +8,9 @@ Thumbs.db
 
 # Environment variables
 .env
+.venv/
+
+#denoserver.js
 deno.lock
 
 # Logs
