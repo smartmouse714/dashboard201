@@ -138,15 +138,20 @@ body {
     line-height: 1.3;
 }
 
-#vicEarthquakeStatus {
-    white-space: pre-line;
-}
-
 /* ==========================================================================
    7. City cards (nested fieldsets)
    ========================================================================== */
 
-.column > fieldset {
+.column>#vendorStatus {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: var(--space-sm);
+}
+
+.column>fieldset,
+.column>#vendorStatus>fieldset {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -156,15 +161,16 @@ body {
     border: 1px solid var(--color-border-muted);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-card);
-    /* keep gap: 5px or turn into a token if you want */
 }
 
-.column>fieldset:hover {
+.column>fieldset:hover,
+.column>#vendorStatus>fieldset:hover {
     background: var(--color-bg-hover);
     box-shadow: var(--shadow-md);
 }
 
-.column>fieldset>legend {
+.column>fieldset>legend,
+.column>#vendorStatus>fieldset>legend {
     width: 100%;
     padding: 0;
     margin: 0;
@@ -196,7 +202,7 @@ time {
    ========================================================================== */
 
 .column-heading button,
-.column > fieldset > legend button {
+.column>fieldset>legend button {
     width: var(--info-btn-size);
     height: var(--info-btn-size);
     min-width: var(--info-btn-size);
@@ -206,24 +212,28 @@ time {
     border: 1.5px solid var(--color-btn-border);
     background: transparent;
     color: var(--color-btn-text);
-    font-size: 0.75rem;         /* fixed, not em → same size in both contexts */
+    font-size: 0.75rem;
+    /* fixed, not em → same size in both contexts */
     font-weight: 700;
     padding: 0;
     line-height: 1;
-    display: inline-flex;       /* centres the “i” reliably */
+    display: inline-flex;
+    /* centres the “i” reliably */
     align-items: center;
     justify-content: center;
     margin-left: 0.35em;
-    vertical-align: middle;     /* better than baseline + top offset */
-    position: static;           /* drop the relative + top hack */
+    vertical-align: middle;
+    /* better than baseline + top offset */
+    position: static;
+    /* drop the relative + top hack */
     cursor: pointer;
     transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
 
 .column-heading button:hover,
 .column-heading button:focus-visible,
-.column > fieldset > legend button:hover,
-.column > fieldset > legend button:focus-visible {
+.column>fieldset>legend button:hover,
+.column>fieldset>legend button:focus-visible {
     background: var(--color-primary);
     color: #fff;
     border-color: var(--color-primary);
@@ -300,6 +310,7 @@ time {
     border: none;
     border-radius: var(--radius-sm);
 }
+
 .column meter::-moz-meter-bar {
     background: var(--color-bg-muted);
     border-radius: var(--radius-sm);
@@ -312,6 +323,7 @@ time {
     background: var(--color-meter-optimum);
     border-radius: var(--radius-sm);
 }
+
 .column meter.meter-ok::-moz-meter-bar {
     background: var(--color-meter-optimum);
 }
@@ -322,6 +334,7 @@ time {
     background: var(--color-meter-suboptimum);
     border-radius: var(--radius-sm);
 }
+
 .column meter.meter-warn::-moz-meter-bar {
     background: var(--color-meter-suboptimum);
 }
@@ -332,13 +345,10 @@ time {
     background: var(--color-meter-critical);
     border-radius: var(--radius-sm);
 }
+
 .column meter.meter-critical::-moz-meter-bar {
     background: var(--color-meter-critical);
 }
-
-/* 3rd party Status */
-.status-ok { color: var(--color-status-ok); font-weight: 700; }
-.status-incident { color: var(--color-status-incident); font-weight: 700; }
 
 /* ==========================================================================
    12. Holidays
@@ -403,6 +413,22 @@ time {
 .incident h3 {
     margin-top: 0;
     color: #ff9800;
+}
+
+/* 3rd party Status */
+.status-ok {
+    color: var(--color-status-ok);
+    font-weight: 700;
+}
+
+.status-incident {
+    color: var(--color-status-incident);
+    font-weight: 700;
+}
+
+.status-unknown {
+    color: var(--color-status-yellow);
+    font-weight: 700;
 }
 
 /* table */
