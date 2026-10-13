@@ -207,7 +207,7 @@ async function updateVendorStatus() {
 // (Using localStorage here for persistence across runs, or fallback to a default date)
 const previousLastModified = localStorage.getItem('previousLastModified') || '1970-01-01T00:00:00.000Z';
 
-async function updateVicEmergency() {
+async function _updateVicEmergency() {
     const el = document.getElementById("vicEarthquakeStatus");
     if (!el) return;
 
@@ -321,7 +321,7 @@ async function _getAlerts() {
 function refreshAllStatuses() {
     updateVendorStatus();
 
-    updateVicEmergency();
+    // updateVicEmergency();
 }
 
 const refresh30minInterval = CONFIG.refreshUnitInterval * 30;
