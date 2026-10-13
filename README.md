@@ -1,9 +1,17 @@
 # YADa - Yet Another DAshboard
 
 ## Description
-YADa is a teaching project to demo front-end development
+YADa is a toy project to demo front-end development through productive struggles. 
 
-## CI/CD
+### Use Case
+Support a SaaS product with international colleagues and clients.
+
+## Learning & Development
+
+### JavaScript
+Learn the art of refactoring
+
+### CI/CD
 Automated simultaneous deployment to GitHub Pages and Azure Static Web Apps via GitHub Actions.
 
 ## Collaboration
