@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v2.328.0
+      - uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
