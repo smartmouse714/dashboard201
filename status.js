@@ -5,78 +5,85 @@ import {
     VENDOR_CATALOG
 } from "./config.js";
 
-/**
- * Fetches the latest software version information from the provided URLs and updates the HTML content of the element with ID "latestVersion".       
- */
+function createReleaseRow(title, version, published) {
+    const template = document.getElementById("release-row-template");
+    const row = template.content.firstElementChild.cloneNode(true);
+
+    row.querySelector(".app-name").textContent = title;
+    row.querySelector(".version").textContent = version;
+    row.querySelector(".published").textContent = published;
+
+    return row;
+}
+
+function createReleaseErrorRow(title) {
+    const template = document.getElementById("release-error-row-template");
+    const row = template.content.firstElementChild.cloneNode(true);
+
+    row.querySelector(".app-name").textContent = title;
+
+    return row;
+}
+
+function createVendorStatus(product, message, cssClass) {
+    const template = document.getElementById("vendor-status-template");
+    const fieldset = template.content.firstElementChild.cloneNode(true);
+
+    fieldset.querySelector("legend").textContent = product;
+
+    const span = fieldset.querySelector("span");
+    span.textContent = message;
+    span.className = cssClass;
+
+    return fieldset;
+}
+
 async function getSoftwareVersion() {
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Application</th>
-                    <th>Version</th>
-                    <th>Published</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+    const tableTemplate = document.getElementById("release-table-template");
+    const table = tableTemplate.content.firstElementChild.cloneNode(true);
+    const tbody = table.querySelector("tbody");
 
     for (const { title, url } of GH_CATALOG) {
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
             const release = await response.json();
 
-            html += `
-                <tr>
-                    <td>${title}</td>
-                    <td>${release.tag_name}</td>
-                    <td>${release.published_at.slice(0, 10)}</td>
-                </tr>
-            `;
+            tbody.appendChild(
+                createReleaseRow(
+                    title,
+                    release.tag_name,
+                    release.published_at.slice(0, 10)
+                )
+            );
         } catch {
-            html += `
-                <tr>
-                    <td>${title}</td>
-                    <td colspan="2">Unknown</td>
-                </tr>
-            `;
+            tbody.appendChild(createReleaseErrorRow(title));
         }
     }
 
     try {
         const response = await fetch(FirefoxURI.url);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
         const release = await response.json();
-        html += `
-        <tr>
-            <td>${FirefoxURI.title}</td>
-            <td>${release.LATEST_FIREFOX_VERSION}</td>
-            <td>${release.LAST_RELEASE_DATE}</td>
-        </tr>
-    `;
+
+        tbody.appendChild(
+            createReleaseRow(
+                FirefoxURI.title,
+                release.LATEST_FIREFOX_VERSION,
+                release.LAST_RELEASE_DATE
+            )
+        );
     } catch {
-        html += `
-                <tr>
-                    <td>${FirefoxURI.title}/td>
-                    <td colspan="2">Unknown</td>
-                </tr>
-            `;
+        tbody.appendChild(createReleaseErrorRow(FirefoxURI.title));
     }
 
-    html += `
-            </tbody>
-        </table>
-    `;
-    return html;
+    return table;
 }
 
-const VERSION_CACHE_KEY = 'softwareVersionCache';
-const VERSION_CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hour
+const VERSION_CACHE_KEY = "softwareVersionCache";
+const VERSION_CACHE_DURATION = 12 * 60 * 60 * 1000;
 
 async function loadSoftwareVersion() {
     const el = document.getElementById("latestVersion");
@@ -93,82 +100,98 @@ async function loadSoftwareVersion() {
         }
     }
 
-    const html = await getSoftwareVersion();
-    el.innerHTML = html;
+    const table = await getSoftwareVersion();
+
+    el.replaceChildren(table);
 
     localStorage.setItem(
         VERSION_CACHE_KEY,
         JSON.stringify({
-            html,
+            html: el.innerHTML,
             timestamp: Date.now()
         })
     );
 }
 
-/**
- * SendGrid, TeamViewer
- * @returns 
- */
 async function updateVendorStatus() {
     const el = document.getElementById("vendorStatus");
     if (!el) return;
 
-    let html = "";
+    const fragment = document.createDocumentFragment();
+
     for (const vendor of VENDOR_CATALOG) {
         switch (vendor.product) {
             case "TeamViewer":
                 try {
                     const response = await fetch(vendor.url);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
                     const data = await response.json();
 
                     if (!data.incidents || data.incidents.length === 0) {
-                        html += `
-                            <fieldset><legend>${vendor.product}</legend><span class="status-ok">OK</span></fieldset>
-                        `;
+                        fragment.appendChild(
+                            createVendorStatus(vendor.product, "OK", "status-ok")
+                        );
                     } else {
-                        const incidents = data.incidents
-                            .map(i => i.name)
-                            .join(", ");
-                        html += `
-                            <fieldset><legend>${vendor.product}</legend><span class="status-incident">${incidents}</span></fieldset>
-                        `;
+                        const incidents = data.incidents.map(i => i.name).join(", ");
+
+                        fragment.appendChild(
+                            createVendorStatus(
+                                vendor.product,
+                                incidents,
+                                "status-incident"
+                            )
+                        );
                     }
                 } catch {
-                    html += `
-                        <fieldset><legend>${vendor.product}</legend><span class="status-unknown">Status Unknown</span></fieldset>
-                    `;
+                    fragment.appendChild(
+                        createVendorStatus(
+                            vendor.product,
+                            "Status Unknown",
+                            "status-unknown"
+                        )
+                    );
                 }
                 break;
+
             case "SendGrid":
                 try {
                     const response = await fetch(vendor.url);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
                     const data = await response.json();
                     const indicator = data.status.indicator;
+
                     const statusClass = ["minor", "major", "critical"].includes(indicator)
                         ? "status-incident"
                         : indicator === "none"
                             ? "status-ok"
                             : "status-unknown";
-                    html += `
-                        <fieldset><legend>${vendor.product}</legend><span class="${statusClass}">${data.status.description}</span></fieldset>
-                    `;
+
+                    fragment.appendChild(
+                        createVendorStatus(
+                            vendor.product,
+                            data.status.description,
+                            statusClass
+                        )
+                    );
                 } catch {
-                    html += `
-                        <fieldset><legend>${vendor.product}</legend><span class="status-unknown">Status Unknown</span></fieldset>
-                    `;
+                    fragment.appendChild(
+                        createVendorStatus(
+                            vendor.product,
+                            "Status Unknown",
+                            "status-unknown"
+                        )
+                    );
                 }
                 break;
+
             default:
-                console.log(vendor.product, 'default');
+                console.log(vendor.product, "default");
         }
     }
-    el.innerHTML = html;
+
+    el.replaceChildren(fragment);
 }
 
 function refreshAllStatuses() {
@@ -178,13 +201,9 @@ function refreshAllStatuses() {
 const refresh30minInterval = CONFIG.refreshUnitInterval * 30;
 
 export function startStatus() {
-    // Load version once on page load or if cache expired
     loadSoftwareVersion();
-
-    // Refresh statuses immediately
     refreshAllStatuses();
 
-    // Refresh statuses periodically
     setInterval(refreshAllStatuses, refresh30minInterval);
     setInterval(loadSoftwareVersion, VERSION_CACHE_DURATION);
 }
