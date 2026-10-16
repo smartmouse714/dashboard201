@@ -64,15 +64,17 @@ function getYearInTimezone(date, timeZone) {
     return Number(year);
 }
 
-function getNorthernDSTDetails(startRule, endRule, timeZone, now) {
+function getDSTDetails(startRule, endRule, timeZone, now, { southern }) {
     const year = getYearInTimezone(now, timeZone);
 
     const startThisYear = createSundayDate(year, startRule, timeZone);
     const endThisYear = createSundayDate(year, endRule, timeZone);
-
+const inFirstHalf = now >= startThisYear; // northern: DST after start
+    const inSecondHalf = now < endThisYear; // southern: DST before end
+    const isDST = southern ? (inFirstHalf || inSecondHalf) : (inFirstHalf && inSecondHalf);
     if (now >= startThisYear && now < endThisYear) {
         return {
-            isDST: true,
+            //isDST: true,
             lastChange: startThisYear,
             lastEvent: "start",
             nextChange: endThisYear,
@@ -82,7 +84,7 @@ function getNorthernDSTDetails(startRule, endRule, timeZone, now) {
 
     if (now < startThisYear) {
         return {
-            isDST: false,
+            //isDST: false,
             lastChange: createSundayDate(year - 1, endRule, timeZone),
             lastEvent: "end",
             nextChange: startThisYear,
@@ -91,7 +93,7 @@ function getNorthernDSTDetails(startRule, endRule, timeZone, now) {
     }
 
     return {
-        isDST: false,
+        //isDST: false,
         lastChange: endThisYear,
         lastEvent: "end",
         nextChange: createSundayDate(year + 1, startRule, timeZone),
@@ -99,7 +101,7 @@ function getNorthernDSTDetails(startRule, endRule, timeZone, now) {
     };
 }
 
-function getSouthernDSTDetails(startRule, endRule, timeZone, now) {
+function _getSouthernDSTDetails(startRule, endRule, timeZone, now) {
     const year = getYearInTimezone(now, timeZone);
     const startThisYear = createSundayDate(year, startRule, timeZone);
     const endThisYear = createSundayDate(year, endRule, timeZone);
@@ -135,10 +137,10 @@ function getSouthernDSTDetails(startRule, endRule, timeZone, now) {
 
 function getDSTDetails(now) {
     return {
-        nz: getSouthernDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.NZ, now),
-        au: getSouthernDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.AU, now),
-        uk: getNorthernDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.UK, now),
-        ca: getNorthernDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.CA, now)
+        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.NZ, now, southern = true),
+        au: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.AU, now, southern = true),
+        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.UK, now, southern = false),
+        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.CA, now, southern = false)
     };
 }
 
