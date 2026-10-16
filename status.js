@@ -43,42 +43,43 @@ async function getSoftwareVersion() {
     const table = tableTemplate.content.firstElementChild.cloneNode(true);
     const tbody = table.querySelector("tbody");
 
-const rows = await Promise.all(GH_CATALOG.map(async ({ title, url }) => {
-    try { 
-                const response = await fetch(url);
+    async function getGitHub({ title, url }) {
+        try {
+            const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const release = await response.json();
 
-            tbody.appendChild(
-                createReleaseRow(
-                    title,
-                    release.tag_name,
-                    release.published_at.slice(0, 10)
-                )
-            );    
+            return createReleaseRow(
+                title,
+                release.tag_name,
+                release.published_at.slice(0, 10)
+            )
+                ;
+        }
+        catch { return createReleaseErrorRow(title); }
     }
-    catch { return createReleaseErrorRow(title); }
-}));
-rows.forEach(r => tbody.appendChild(r));
-    
-    try {
-        const response = await fetch(FirefoxURI.url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        const release = await response.json();
+    async function getFirefox() {
+        try {
+            const response = await fetch(FirefoxURI.url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        tbody.appendChild(
-            createReleaseRow(
+            const release = await response.json();
+
+            return createReleaseRow(
                 FirefoxURI.title,
                 release.LATEST_FIREFOX_VERSION,
                 release.LAST_RELEASE_DATE
             )
-        );
-    } catch {
-        tbody.appendChild(createReleaseErrorRow(FirefoxURI.title));
+                ;
+        } catch {
+            tbody.appendChild(createReleaseErrorRow(FirefoxURI.title));
+        }
     }
 
+    const rows = await Promise.all([...GH_CATALOG.map(getGitHub), getFirefox()]);
+    rows.forEach((row) => tbody.appendChild(row));
     return table;
 }
 

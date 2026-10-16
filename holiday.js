@@ -59,29 +59,28 @@ async function getThisMonthsHolidays(now) {
     const end = toDateString(last);
     const year = first.getFullYear();
 
-    const results = [];
-
     const secondTue = secondTuesdayOfMonth(year, month);
-    results.push({
+    const patchTue = {
         date: toDateString(secondTue),
         name: "Patch Tuesday",
         region: "Geeks"
-    });
+    };
 
-    for (const region of REGIONS) {
-        const data = await fetchHolidays(region.country, year);
-        for (const h of data) {
-            if (!isRelevant(h, region.subdivision)) continue;
-            if (h.date < start || h.date > end) continue;
+    const perRegion = await Promise.all(
+        REGIONS.map(async (region) => {
+            const data = await fetchHolidays(region.country, year);
+            return data
+                .filter((h) => isRelevant(h, region.subdivision))
+                .filter((h) => h.date >= start && h.date <= end)
+                .map((h) => ({
+                    date: h.date,
+                    name: h.localName || h.name,
+                    region: region.label
+                }));
+        })
+    );
 
-            results.push({
-                date: h.date,
-                name: h.localName || h.name,
-                region: region.label
-            });
-        }
-    }
-
+    const results = [patchTue, ...perRegion.flat()];
     results.sort((a, b) => a.date.localeCompare(b.date) || a.region.localeCompare(b.region));
     return results;
 }

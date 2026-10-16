@@ -64,27 +64,52 @@ function getYearInTimezone(date, timeZone) {
     return Number(year);
 }
 
-function getDSTDetails(startRule, endRule, timeZone, now, { southern }) {
+function getDSTDetails(startRule, endRule, timeZone, now, southern = false) {
     const year = getYearInTimezone(now, timeZone);
 
     const startThisYear = createSundayDate(year, startRule, timeZone);
     const endThisYear = createSundayDate(year, endRule, timeZone);
-const inFirstHalf = now >= startThisYear; // northern: DST after start
-    const inSecondHalf = now < endThisYear; // southern: DST before end
-    const isDST = southern ? (inFirstHalf || inSecondHalf) : (inFirstHalf && inSecondHalf);
+
+    if (southern) {
+        if (now >= startThisYear) {
+            return {
+                isDST: true,
+                lastChange: startThisYear,
+                lastEvent: "start",
+                nextChange: createSundayDate(year + 1, endRule, timeZone),
+                nextEvent: "end"
+            };
+        }
+        if (now < endThisYear) {
+            return {
+                isDST: true,
+                lastChange: createSundayDate(year - 1, startRule, timeZone),
+                lastEvent: "start",
+                nextChange: endThisYear,
+                nextEvent: "end"
+            };
+        }
+        return {
+            isDST: false,
+            lastChange: endThisYear,
+            lastEvent: "end",
+            nextChange: startThisYear,
+            nextEvent: "start"
+        };
+    }
+
     if (now >= startThisYear && now < endThisYear) {
         return {
-            //isDST: true,
+            isDST: true,
             lastChange: startThisYear,
             lastEvent: "start",
             nextChange: endThisYear,
             nextEvent: "end"
         };
     }
-
     if (now < startThisYear) {
         return {
-            //isDST: false,
+            isDST: false,
             lastChange: createSundayDate(year - 1, endRule, timeZone),
             lastEvent: "end",
             nextChange: startThisYear,
@@ -93,7 +118,7 @@ const inFirstHalf = now >= startThisYear; // northern: DST after start
     }
 
     return {
-        //isDST: false,
+        isDST: false,
         lastChange: endThisYear,
         lastEvent: "end",
         nextChange: createSundayDate(year + 1, startRule, timeZone),
@@ -101,46 +126,12 @@ const inFirstHalf = now >= startThisYear; // northern: DST after start
     };
 }
 
-function _getSouthernDSTDetails(startRule, endRule, timeZone, now) {
-    const year = getYearInTimezone(now, timeZone);
-    const startThisYear = createSundayDate(year, startRule, timeZone);
-    const endThisYear = createSundayDate(year, endRule, timeZone);
-
-    if (now >= startThisYear) {
-        return {
-            isDST: true,
-            lastChange: startThisYear,
-            lastEvent: "start",
-            nextChange: createSundayDate(year + 1, endRule, timeZone),
-            nextEvent: "end"
-        };
-    }
-
-    if (now < endThisYear) {
-        return {
-            isDST: true,
-            lastChange: createSundayDate(year - 1, startRule, timeZone),
-            lastEvent: "start",
-            nextChange: endThisYear,
-            nextEvent: "end"
-        };
-    }
-
+function getDSTData(now) {
     return {
-        isDST: false,
-        lastChange: endThisYear,
-        lastEvent: "end",
-        nextChange: startThisYear,
-        nextEvent: "start"
-    };
-}
-
-function getDSTDetails(now) {
-    return {
-        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.NZ, now, southern = true),
-        au: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.AU, now, southern = true),
-        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.UK, now, southern = false),
-        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.CA, now, southern = false)
+        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.NZ, now, true),
+        au: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.AU, now, true),
+        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.UK, now),
+        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.CA, now)
     };
 }
 
@@ -161,7 +152,7 @@ function countdownDays(diff) {
 }
 
 function refreshCountdowns(now = new Date()) {
-    const { au, ca, nz, uk } = getDSTDetails(now);
+    const { au, ca, nz, uk } = getDSTData(now);
     const targets = [
         { nextChange: ca.nextChange, selector: ".caCountdown" },
         { nextChange: uk.nextChange, selector: ".ukCountdown" },
@@ -284,7 +275,7 @@ function updateDSTUI({ au, ca, nz, uk }) {
 }
 
 export function startDSTInfo(now = new Date()) {
-    updateDSTUI(getDSTDetails(now));
+    updateDSTUI(getDSTData(now));
     refreshCountdowns(now);
     setInterval(() => refreshCountdowns(new Date()), CONFIG.refreshUnitInterval);
 }
