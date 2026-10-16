@@ -43,9 +43,9 @@ async function getSoftwareVersion() {
     const table = tableTemplate.content.firstElementChild.cloneNode(true);
     const tbody = table.querySelector("tbody");
 
-    for (const { title, url } of GH_CATALOG) {
-        try {
-            const response = await fetch(url);
+const rows = await Promise.all(GH_CATALOG.map(async ({ title, url }) => {
+    try { 
+                const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const release = await response.json();
@@ -56,12 +56,12 @@ async function getSoftwareVersion() {
                     release.tag_name,
                     release.published_at.slice(0, 10)
                 )
-            );
-        } catch {
-            tbody.appendChild(createReleaseErrorRow(title));
-        }
+            );    
     }
-
+    catch { return createReleaseErrorRow(title); }
+}));
+rows.forEach(r => tbody.appendChild(r));
+    
     try {
         const response = await fetch(FirefoxURI.url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
