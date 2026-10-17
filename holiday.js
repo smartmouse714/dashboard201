@@ -8,6 +8,10 @@ import {
     HolidayAPI_BASE,
     REGIONS
 } from "./config.js";
+import { fromTemplate, fill, swapRendered, clearRendered } from "./dom-utils.js";
+
+const HOLIDAY_OWN_SELECTOR =
+    ":scope > .holiday-region-group, :scope > .holiday-items, :scope > .holiday-item";
 
 const cache = new Map();
 
@@ -98,19 +102,12 @@ function groupByRegion(holidays) {
     return groups;
 }
 
-function esc(s) {
-    return s.replace(/[&<>"']/g, (c) => (
-        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
-    ));
-}
-
 async function renderHolidays(now) {
     const container = document.getElementById("holidays");
-    const list = document.getElementById("holidayList");
     const monthEl = document.getElementById("holidayMonth");
     const prevBtn = document.getElementById("holidayPrev");
     const nextBtn = document.getElementById("holidayNext");
-    if (!container || !list || !monthEl) return;
+    if (!container || !monthEl) return;
 
     prevBtn.disabled = viewOffset <= -MAX_OFFSET;
     nextBtn.disabled = viewOffset >= MAX_OFFSET;
@@ -123,40 +120,56 @@ async function renderHolidays(now) {
 
     try {
         const holidays = await getThisMonthsHolidays(now, viewOffset);
+        container.hidden = false;
 
+        let nodes;
         if (holidays.length === 0) {
-            list.innerHTML = `<div class="holiday-item holiday-empty">No holidays</div>`;
-            return;
-        }
+            /* ul wrapper so the li is never orphaned directly under a div */
+            const emptyList = document.createElement("ul");
+            emptyList.className = "holiday-items";
+            emptyList.appendChild(fill(fromTemplate("holiday-empty-template"), {
+                '[data-field="message"]': "No holidays"
+            }));
+            nodes = emptyList;
+        } else {
+            const groups = groupByRegion(holidays);
+            const hideEmpty = document.getElementById("hideEmptyRegions")?.checked ?? true;
+            const fragment = document.createDocumentFragment();
 
-        const groups = groupByRegion(holidays);
-        const hideEmpty = document.getElementById("hideEmptyRegions")?.checked ?? true;
+            for (const [region, items] of groups) {
+                if (hideEmpty && items.length === 0) continue;
 
-        let html = "";
-        for (const [region, items] of groups) {
-            if (hideEmpty && items.length === 0) continue;
+                const group = fromTemplate("holiday-region-template");
+                fill(group, { '[data-field="region"]': region });
+                const list = group.querySelector(".holiday-items");
 
-            html += `<div class="holiday-region-group">
-                <div class="holiday-region-name">${esc(region)}</div>`;
-            for (const h of items) {
-                const d = new Date(h.date + "T00:00:00");
-                const label = d.toLocaleDateString("en-CA", {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short"
-                });
-                html += `
-                    <div class="holiday-item">
-                        <strong>${esc(label)}</strong> - <mark>${esc(h.name)}</mark>
-                    </div>`;
+                for (const h of items) {
+                    const d = new Date(h.date + "T00:00:00");
+                    const label = d.toLocaleDateString("en-CA", {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short"
+                    });
+                    list.appendChild(fill(fromTemplate("holiday-item-template"), {
+                        '[data-field="label"]': `${label}`,
+                        '[data-field="name"]': h.name
+                    }));
+                }
+
+                fragment.appendChild(group);
             }
-            html += `</div>`;
+            nodes = fragment;
         }
 
-        list.innerHTML = html;
+        swapRendered(
+            container,
+            HOLIDAY_OWN_SELECTOR,
+            nodes,
+            (n) => container.append(n)
+        );
     } catch (err) {
         console.error("Holiday fetch failed:", err);
-        list.innerHTML = "";
+        clearRendered(container, HOLIDAY_OWN_SELECTOR);
         container.hidden = true;
     }
 }

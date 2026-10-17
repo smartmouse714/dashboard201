@@ -22,7 +22,6 @@
                     <span id="holidayMonth" aria-live="polite"></span>
                     <button id="holidayNext" aria-label="Next month" title="Next month">›</button>
                 </div>
-                <div id="holidayList"></div>
             </div>
         </section>
         <section class="column">
@@ -35,15 +34,11 @@
             </dialog>
             <fieldset>
                 <legend>Perth</legend>
-                <div class="clock-with-offset">
-                    <time id="PerthClock"></time><span id="PerthDayOffset" class="day-offset"></span>
-                </div>
+                <time id="PerthClock"></time><span id="PerthDayOffset" class="day-offset"></span>
             </fieldset>
             <fieldset>
                 <legend>Darwin</legend>
-                <div class="clock-with-offset">
-                    <time id="DarwinClock"></time><span id="DarwinDayOffset" class="day-offset"></span>
-                </div>
+                <time id="DarwinClock"></time><span id="DarwinDayOffset" class="day-offset"></span>
             </fieldset>
             <fieldset>
                 <legend>Canberra, Hobart, Melbourne, Sydney</legend>
@@ -59,9 +54,7 @@
             </fieldset>
             <fieldset>
                 <legend>Brisbane</legend>
-                <div class="clock-with-offset">
-                    <time id="BrisbaneClock"></time><span id="BrisbaneDayOffset" class="day-offset"></span>
-                </div>
+                <time id="BrisbaneClock"></time><span id="BrisbaneDayOffset" class="day-offset"></span>
             </fieldset>
             <fieldset>
                 <legend>Adelaide</legend>
@@ -138,7 +131,6 @@
         </section>
         <section class="column">
             <h1 class="column-heading">3rd Party</h1>
-            <span id="vendorStatus"></span>
             <details class="release-details">
                 <summary>
                     <h2 class="column-heading">Latest Releases</h2>
@@ -148,25 +140,40 @@
         </section>
     </div>
 
-    <template id="release-row-template">
-        <tr>
-            <td class="app-name"></td>
-            <td class="version"></td>
-            <td class="published"></td>
-        </tr>
+    <template id="holiday-region-template">
+        <section class="holiday-region-group">
+            <h3 class="holiday-region-name" data-field="region"></h3>
+            <ul class="holiday-items"></ul>
+        </section>
     </template>
 
-    <template id="release-error-row-template">
+    <template id="holiday-item-template">
+        <li class="holiday-item">
+            <strong data-field="label"></strong> - <mark data-field="name"></mark>
+        </li>
+    </template>
+
+    <template id="holiday-empty-template">
+        <li class="holiday-item holiday-empty" data-field="message"></li>
+    </template>
+
+    <template id="countdown-meter-template">
+        <meter min="0" low="30" optimum="90" high="150" max="183"
+            aria-label="Days until next time change"></meter>
+    </template>
+
+    <template id="release-row-template">
         <tr>
-            <td class="app-name"></td>
-            <td colspan="2">Unknown</td>
+            <td class="app-name" data-field="app"></td>
+            <td class="version" data-field="version"></td>
+            <td class="published" data-field="published"></td>
         </tr>
     </template>
 
     <template id="vendor-status-template">
-        <fieldset>
-            <legend></legend>
-            <span></span>
+        <fieldset class="vendor-status">
+            <legend data-field="product"></legend>
+            <span data-field="message"></span>
         </fieldset>
     </template>
 

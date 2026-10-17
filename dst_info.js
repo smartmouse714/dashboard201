@@ -3,6 +3,7 @@ import {
     DST_RULES,
     DST_ZONES
 } from "./config.js";
+import { fromTemplate } from "./dom-utils.js";
 
 function getTimeZoneOffset(timestamp, timeZone) {
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -151,6 +152,16 @@ function countdownDays(diff) {
     return (diff / (1000 * 60 * 60 * 24)).toFixed(2);
 }
 
+function createCountdownMeter(days) {
+    const meter = fromTemplate("countdown-meter-template");
+    const v = Number(days);
+
+    meter.value = v;
+    meter.className = v < meter.low ? "meter-critical" : v < meter.optimum ? "meter-warn" : "meter-ok";
+
+    return meter;
+}
+
 function refreshCountdowns(now = new Date()) {
     const { au, ca, nz, uk } = getDSTData(now);
     const targets = [
@@ -175,17 +186,7 @@ function refreshCountdowns(now = new Date()) {
                     break;
                 }
                 default: {
-                    const meter = document.createElement("meter");
-                    meter.min = 0;
-                    meter.low = 30;
-                    meter.optimum = 90;
-                    meter.high = 150;
-                    meter.max = 183;
-                    meter.value = Number(days);
-                    meter.setAttribute("aria-label", "Days until next time change");
-                    const v = Number(days);
-                    meter.className = v < meter.low ? "meter-critical" : v < meter.optimum ? "meter-warn" : "meter-ok";
-                    el.replaceChildren("Countdown ", meter, ` ${days} days`);
+                    el.replaceChildren("Countdown ", createCountdownMeter(days), ` ${days} days`);
                     break;
                 }
             }

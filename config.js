@@ -106,11 +106,17 @@ export const REGIONS = [
 export const HolidayAPI_BASE = "https://date.nager.at/api/v3/PublicHolidays";
 
 /**
- * API endpoints
+ * API endpoints.
+ * Each source carries a `pick(json)` adapter returning [version, published],
+ * so status.js needs only one generic fetch path.
  */
 export const FirefoxURI = {
     title: "Mozilla Firefox",
-    url: "https://product-details.mozilla.org/1.0/firefox_versions.json"
+    url: "https://product-details.mozilla.org/1.0/firefox_versions.json",
+    pick: (release) => [
+        release.LATEST_FIREFOX_VERSION,
+        release.LAST_RELEASE_DATE
+    ]
 };
 
 const repos = {
@@ -144,9 +150,15 @@ GH_CATALOG = [
     }
 ];
  */
+const ghPick = (release) => [
+    release.tag_name,
+    release.published_at.slice(0, 10)
+];
+
 export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
     title,
-    url: `https://api.github.com/repos/${repo}/releases/latest`
+    url: `https://api.github.com/repos/${repo}/releases/latest`,
+    pick: ghPick
 }));
 export const VENDOR_CATALOG = [
     {
@@ -158,4 +170,3 @@ export const VENDOR_CATALOG = [
         url: "https://status.twilio.com/api/v2/status.json"
     }
 ];
-

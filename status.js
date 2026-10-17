@@ -4,83 +4,54 @@ import {
     GH_CATALOG,
     VENDOR_CATALOG
 } from "./config.js";
+import {
+    fromTemplate,
+    fill,
+    swapRendered
+} from "./dom-utils.js";
 
-function createReleaseRow(title, version, published) {
-    const template = document.getElementById("release-row-template");
-    const row = template.content.firstElementChild.cloneNode(true);
-
-    row.querySelector(".app-name").textContent = title;
-    row.querySelector(".version").textContent = version;
-    row.querySelector(".published").textContent = published;
-
-    return row;
-}
-
-function createReleaseErrorRow(title) {
-    const template = document.getElementById("release-error-row-template");
-    const row = template.content.firstElementChild.cloneNode(true);
-
-    row.querySelector(".app-name").textContent = title;
-
-    return row;
+function createReleaseRow({ title, version = "Unknown", published = "—" }) {
+    return fill(fromTemplate("release-row-template"), {
+        '[data-field="app"]': title,
+        '[data-field="version"]': version,
+        '[data-field="published"]': published
+    });
 }
 
 function createVendorStatus(product, message, cssClass) {
-    const template = document.getElementById("vendor-status-template");
-    const fieldset = template.content.firstElementChild.cloneNode(true);
+    const fieldset = fromTemplate("vendor-status-template");
 
-    fieldset.querySelector("legend").textContent = product;
+    const status = fill(fieldset, {
+        '[data-field="product"]': product,
+        '[data-field="message"]': message
+    });
 
-    const span = fieldset.querySelector("span");
-    span.textContent = message;
-    span.className = cssClass;
+    status.querySelector('[data-field="message"]').className = cssClass;
 
-    return fieldset;
+    return status;
 }
 
-async function getSoftwareVersion() {
-    const tableTemplate = document.getElementById("release-table-template");
-    const table = tableTemplate.content.firstElementChild.cloneNode(true);
-    const tbody = table.querySelector("tbody");
+/**
+ * Fetch one release source and return plain row data.
+ * The `pick` adapter (provided per source in config.js) decouples this
+ * fetcher from each API's payload shape. On any failure the row data
+ * carries only the title, so the caller renders "Unknown" defaults.
+ */
+async function fetchRelease({ title, url, pick }) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    async function getGitHub({ title, url }) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const [version, published] = pick(await response.json());
 
-            const release = await response.json();
-
-            return createReleaseRow(
-                title,
-                release.tag_name,
-                release.published_at.slice(0, 10)
-            )
-                ;
-        }
-        catch { return createReleaseErrorRow(title); }
+        return { title, version, published };
+    } catch {
+        return { title };
     }
+}
 
-    async function getFirefox() {
-        try {
-            const response = await fetch(FirefoxURI.url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const release = await response.json();
-
-            return createReleaseRow(
-                FirefoxURI.title,
-                release.LATEST_FIREFOX_VERSION,
-                release.LAST_RELEASE_DATE
-            )
-                ;
-        } catch {
-            tbody.appendChild(createReleaseErrorRow(FirefoxURI.title));
-        }
-    }
-
-    const rows = await Promise.all([...GH_CATALOG.map(getGitHub), getFirefox()]);
-    rows.forEach((row) => tbody.appendChild(row));
-    return table;
+function getReleaseData() {
+    return Promise.all([...GH_CATALOG, FirefoxURI].map(fetchRelease));
 }
 
 const VERSION_CACHE_KEY = "softwareVersionCache";
@@ -90,33 +61,41 @@ async function loadSoftwareVersion() {
     const el = document.getElementById("latestVersion");
     if (!el) return;
 
+    let rows;
     const cached = localStorage.getItem(VERSION_CACHE_KEY);
 
     if (cached) {
-        const { timestamp, html } = JSON.parse(cached);
+        try {
+            const { timestamp, rows: cachedRows } = JSON.parse(cached);
 
-        if (Date.now() - timestamp < VERSION_CACHE_DURATION) {
-            el.innerHTML = html;
-            return;
+            if (Date.now() - timestamp < VERSION_CACHE_DURATION) {
+                rows = cachedRows;
+            }
+        } catch {
+            /* corrupt or legacy cache → refetch below */
         }
     }
 
-    const table = await getSoftwareVersion();
+    if (!rows) {
+        rows = await getReleaseData();
+
+        localStorage.setItem(
+            VERSION_CACHE_KEY,
+            JSON.stringify({ rows, timestamp: Date.now() })
+        );
+    }
+
+    /* assemble the table through templates from data — never cached markup */
+    const table = fromTemplate("release-table-template");
+    const tbody = table.querySelector("tbody");
+    rows.map(createReleaseRow).forEach((row) => tbody.appendChild(row));
 
     el.replaceChildren(table);
-
-    localStorage.setItem(
-        VERSION_CACHE_KEY,
-        JSON.stringify({
-            html: el.innerHTML,
-            timestamp: Date.now()
-        })
-    );
 }
 
 async function updateVendorStatus() {
-    const el = document.getElementById("vendorStatus");
-    if (!el) return;
+    const anchor = document.querySelector(".release-details");
+    if (!anchor) return;
 
     const fragment = document.createDocumentFragment();
 
@@ -192,7 +171,12 @@ async function updateVendorStatus() {
         }
     }
 
-    el.replaceChildren(fragment);
+    swapRendered(
+        anchor.parentElement,
+        "fieldset.vendor-status",
+        fragment,
+        (nodes) => anchor.before(nodes)
+    );
 }
 
 function refreshAllStatuses() {

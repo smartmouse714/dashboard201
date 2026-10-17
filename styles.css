@@ -143,35 +143,21 @@ body {
    7. City cards (nested fieldsets)
    ========================================================================== */
 
-.column>#vendorStatus {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.column>fieldset {
     width: 100%;
-    gap: var(--space-sm);
-}
-
-.column>fieldset,
-.column>#vendorStatus>fieldset {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: 5px;
+    text-align: center;
     background-color: var(--color-bg-muted);
     border: 1px solid var(--color-border-muted);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-card);
 }
 
-.column>fieldset:hover,
-.column>#vendorStatus>fieldset:hover {
+.column>fieldset:hover {
     background: var(--color-bg-hover);
     box-shadow: var(--shadow-md);
 }
 
-.column>fieldset>legend,
-.column>#vendorStatus>fieldset>legend {
+.column>fieldset>legend {
     width: 100%;
     padding: 0;
     margin: 0;
@@ -179,6 +165,10 @@ body {
     font-weight: 600;
     color: var(--color-text);
     line-height: 1.3;
+}
+
+.column>fieldset>time {
+    display: inline;
 }
 
 .column>fieldset.dst-active>legend {
@@ -273,13 +263,6 @@ time {
     white-space: nowrap;
 }
 
-.clock-with-offset {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35em;
-}
-
 /* DST panel shown when details is open */
 .column>fieldset details[open]> :not(summary) {
     display: block;
@@ -368,6 +351,10 @@ time {
 
 .holiday-region-group {
     margin-bottom: 10px;
+}
+
+.holiday-items {
+    list-style: none;
 }
 
 .holiday-nav {
