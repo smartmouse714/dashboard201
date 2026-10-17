@@ -132,11 +132,15 @@
         <section class="column">
             <h1 class="column-heading">3rd Party</h1>
             <span id="vendorStatus"></span>
-            <h2 class="column-heading">Latest Releases</h2>
-            <span id="latestVersion"></span>
+            <details class="release-details">
+                <summary>
+                    <h2 class="column-heading">Latest Releases</h2>
+                </summary>
+                <span id="latestVersion"></span>
+            </details>
         </section>
     </div>
-    
+
     <template id="release-row-template">
         <tr>
             <td class="app-name"></td>

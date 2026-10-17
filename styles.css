@@ -441,11 +441,49 @@ time {
 
 #latestVersion table {
     border-collapse: collapse;
+    margin: 0 auto;
 }
 
 #latestVersion th,
 #latestVersion td {
     padding: 2px 3px;
+}
+
+/* collapsible Latest Releases */
+.release-details {
+    width: 100%;
+}
+
+.release-details summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.release-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.release-details summary::before {
+    content: "▸";
+    margin-right: 0.35em;
+    transition: transform var(--transition);
+}
+
+.release-details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.release-details[open] summary .column-heading {
+    color: var(--color-primary);
+}
+
+.release-details summary:hover .column-heading,
+.release-details summary:focus-visible .column-heading {
+    color: var(--color-primary);
 }
 
 /* ==========================================================================

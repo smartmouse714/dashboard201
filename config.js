@@ -115,9 +115,10 @@ export const FirefoxURI = {
 
 const repos = {
     "Coreutils for Windows": "microsoft/coreutils",
-    "Deno": "denoland/deno",
-    "Notepad++": "notepad-plus-plus/notepad-plus-plus",
+    "Greenshot": "greenshot/greenshot",
     "PowerShell": "PowerShell/PowerShell",
+    "SumatraPDF": "sumatrapdfreader/sumatrapdf",
+    "Visual Studio Code": "microsoft/vscode",
     "Windows Terminal": "microsoft/terminal"
 };
 /**
@@ -127,16 +128,20 @@ GH_CATALOG = [
         url: "https://api.github.com/repos/microsoft/coreutils/releases/latest"
     },
     {
-        title: "Deno",
-        url: "https://api.github.com/repos/denoland/deno/releases/latest"
-    },
-    {
-        title: "Notepad++",
-        url: "https://api.github.com/repos/notepad-plus-plus/notepad-plus-plus/releases/latest"
+        title: "Greenshot",
+        url: "https://api.github.com/repos/greenshot/greenshot/releases/latest"
     },
     {
         title: "PowerShell",
         url: "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
+    },
+    {
+        title: "SumatraPDF",
+        url: "https://api.github.com/repos/sumatrapdfreader/sumatrapdf/releases/latest"
+    },
+    {
+        title: "Visual Studio Code",
+        url: "https://api.github.com/repos/microsoft/vscode/releases/latest"
     },
     {
         title: "Windows Terminal",
