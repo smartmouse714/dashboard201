@@ -117,7 +117,6 @@ const repos = {
     "Coreutils for Windows": "microsoft/coreutils",
     "Greenshot": "greenshot/greenshot",
     "PowerShell": "PowerShell/PowerShell",
-    "SumatraPDF": "sumatrapdfreader/sumatrapdf",
     "Visual Studio Code": "microsoft/vscode",
     "Windows Terminal": "microsoft/terminal"
 };
@@ -134,10 +133,6 @@ GH_CATALOG = [
     {
         title: "PowerShell",
         url: "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
-    },
-    {
-        title: "SumatraPDF",
-        url: "https://api.github.com/repos/sumatrapdfreader/sumatrapdf/releases/latest"
     },
     {
         title: "Visual Studio Code",
