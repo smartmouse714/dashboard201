@@ -370,6 +370,60 @@ time {
     margin-bottom: 10px;
 }
 
+.holiday-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: 6px;
+}
+
+.holiday-nav button {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-btn-border);
+    background: transparent;
+    color: var(--color-btn-text);
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.holiday-nav button:hover:not(:disabled),
+.holiday-nav button:focus-visible:not(:disabled) {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+.holiday-nav button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+#holidayMonth {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.holiday-empty {
+    font-style: italic;
+    color: var(--color-btn-text);
+}
+
 .holiday-region-group:last-child {
     margin-bottom: 0;
 }

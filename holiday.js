@@ -11,6 +11,10 @@ import {
 
 const cache = new Map();
 
+/* 0 = current month, negative = past, positive = future (capped at ±12) */
+let viewOffset = 0;
+const MAX_OFFSET = 12;
+
 async function fetchHolidays(country, year) {
     const key = `${country}-${year}`;
     if (cache.has(key)) return cache.get(key);
@@ -29,14 +33,14 @@ function isRelevant(holiday, subdivision) {
     return subdivision && holiday.counties.includes(subdivision);
 }
 
-function getMonthRange(now) {
+function getMonthRange(now, offset = 0) {
     const year = now.getFullYear();
-    const month = now.getMonth();
+    const month = now.getMonth() + offset;
 
     const first = new Date(year, month, 1);
     const last = new Date(year, month + 1, 0);
 
-    return { first, last, month };
+    return { first, last, month: first.getMonth() };
 }
 
 function toDateString(d) {
@@ -53,8 +57,8 @@ function secondTuesdayOfMonth(year, month) {
     return new Date(year, month, secondTue);
 }
 
-async function getThisMonthsHolidays(now) {
-    const { first, last, month } = getMonthRange(now);
+async function getThisMonthsHolidays(now, offset = 0) {
+    const { first, last, month } = getMonthRange(now, offset);
     const start = toDateString(first);
     const end = toDateString(last);
     const year = first.getFullYear();
@@ -94,16 +98,34 @@ function groupByRegion(holidays) {
     return groups;
 }
 
+function esc(s) {
+    return s.replace(/[&<>"']/g, (c) => (
+        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+}
+
 async function renderHolidays(now) {
     const container = document.getElementById("holidays");
-    if (!container) return;
+    const list = document.getElementById("holidayList");
+    const monthEl = document.getElementById("holidayMonth");
+    const prevBtn = document.getElementById("holidayPrev");
+    const nextBtn = document.getElementById("holidayNext");
+    if (!container || !list || !monthEl) return;
+
+    prevBtn.disabled = viewOffset <= -MAX_OFFSET;
+    nextBtn.disabled = viewOffset >= MAX_OFFSET;
+
+    const { first } = getMonthRange(now, viewOffset);
+    monthEl.textContent = first.toLocaleDateString("en-CA", {
+        month: "long",
+        year: "numeric"
+    });
 
     try {
-        const holidays = await getThisMonthsHolidays(now);
+        const holidays = await getThisMonthsHolidays(now, viewOffset);
 
         if (holidays.length === 0) {
-            container.textContent = "";
-            container.hidden = true;
+            list.innerHTML = `<div class="holiday-item holiday-empty">No holidays</div>`;
             return;
         }
 
@@ -115,7 +137,7 @@ async function renderHolidays(now) {
             if (hideEmpty && items.length === 0) continue;
 
             html += `<div class="holiday-region-group">
-                <div class="holiday-region-name">${region}</div>`;
+                <div class="holiday-region-name">${esc(region)}</div>`;
             for (const h of items) {
                 const d = new Date(h.date + "T00:00:00");
                 const label = d.toLocaleDateString("en-CA", {
@@ -125,24 +147,37 @@ async function renderHolidays(now) {
                 });
                 html += `
                     <div class="holiday-item">
-                        <strong>${label}</strong> - <mark>${h.name}</mark>
+                        <strong>${esc(label)}</strong> - <mark>${esc(h.name)}</mark>
                     </div>`;
             }
             html += `</div>`;
         }
 
-        container.hidden = false;
-        container.innerHTML = html;
+        list.innerHTML = html;
     } catch (err) {
         console.error("Holiday fetch failed:", err);
+        list.innerHTML = "";
         container.hidden = true;
     }
 }
 
+function navigateHolidays(delta) {
+    const next = viewOffset + delta;
+    if (next < -MAX_OFFSET || next > MAX_OFFSET) return;
+    viewOffset = next;
+    renderHolidays(new Date());
+}
+
 export function startHolidays(now) {
     renderHolidays(now);
+
+    document.getElementById("holidayPrev")
+        ?.addEventListener("click", () => navigateHolidays(-1));
+    document.getElementById("holidayNext")
+        ?.addEventListener("click", () => navigateHolidays(1));
+
     const toggle = document.getElementById("hideEmptyRegions");
     if (toggle) {
-        toggle.addEventListener("change", renderHolidays);
+        toggle.addEventListener("change", () => renderHolidays(new Date()));
     }
 }

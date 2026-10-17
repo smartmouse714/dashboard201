@@ -16,7 +16,14 @@
             <h1 class="column-heading"><img src="mti.svg" alt="mti"></h1>
             <canvas id="hq-clock" width="250" height="250"></canvas>
             <time class="hq-date" id="currentDate"></time>
-            <div id="holidays" class="holiday"></div>
+            <div id="holidays" class="holiday">
+                <div class="holiday-nav">
+                    <button id="holidayPrev" aria-label="Previous month" title="Previous month">‹</button>
+                    <span id="holidayMonth" aria-live="polite"></span>
+                    <button id="holidayNext" aria-label="Next month" title="Next month">›</button>
+                </div>
+                <div id="holidayList"></div>
+            </div>
         </section>
         <section class="column">
             <h1 class="column-heading">Australia<button aria-label="About AU DST" command="show-modal"
@@ -175,6 +182,11 @@
             <tbody></tbody>
         </table>
     </template>
+
+    <!-- Cloudflare Web Analytics -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "66b16d4a8b5d43fea0913ff708a32402"}'></script>
+    <!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>
