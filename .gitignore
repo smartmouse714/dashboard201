@@ -1,14 +1,14 @@
 # OS files
-.DS_Store
 Thumbs.db
 
 # Editor files
-.vs/
-.vscode/
+.vs
+.vscode
 
 # Environment variables
+.devcontainer
 .env
-.venv/
+.venv
 
 #denoserver.js
 deno.lock

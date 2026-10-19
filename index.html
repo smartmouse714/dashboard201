@@ -8,21 +8,22 @@
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js"></script>
     <title>Yet Another DAshboard</title>
+    <meta name="theme-color" content="#f5f7fa">
 </head>
 
 <body>
-    <div class="grid-container">
+    <main class="grid-container">
         <section class="column">
             <h1 class="column-heading"><img src="mti.svg" alt="mti"></h1>
-            <canvas id="hq-clock" width="250" height="250"></canvas>
+            <canvas id="hq-clock" width="250" height="250" role="img" aria-label="Analog clock"></canvas>
             <time class="hq-date" id="currentDate"></time>
-            <div id="holidays" class="holiday">
-                <div class="holiday-nav">
+            <section id="holidays" class="holiday" aria-label="Public holidays">
+                <nav class="holiday-nav" aria-label="Holiday month">
                     <button id="holidayPrev" aria-label="Previous month" title="Previous month">‹</button>
                     <span id="holidayMonth" aria-live="polite"></span>
                     <button id="holidayNext" aria-label="Next month" title="Next month">›</button>
-                </div>
-            </div>
+                </nav>
+            </section>
         </section>
         <section class="column">
             <h1 class="column-heading">Australia<button aria-label="About AU DST" command="show-modal"
@@ -73,7 +74,7 @@
         <section class="column">
             <h1 class="column-heading">World</h1>
             <fieldset>
-                <legend>Auckland, Wellington<button aria-label="About NZ DST" command="show-modal"
+                <legend>Auckland & Wellington, New Zealand<button aria-label="About NZ DST" command="show-modal"
                         commandfor="dialogNZ">i</button></legend>
                 <dialog id="dialogNZ" class="info-dialog">
                     <p>DST starts on the last Sunday of September and ends on the first Sunday of April in New Zealand.
@@ -138,7 +139,7 @@
                 <span id="latestVersion"></span>
             </details>
         </section>
-    </div>
+    </main>
 
     <template id="holiday-region-template">
         <section class="holiday-region-group">
@@ -158,8 +159,7 @@
     </template>
 
     <template id="countdown-meter-template">
-        <meter min="0" low="30" optimum="90" high="150" max="183"
-            aria-label="Days until next time change"></meter>
+        <meter min="0" low="30" optimum="90" high="150" max="183" aria-label="Days until next time change"></meter>
     </template>
 
     <template id="release-row-template">
