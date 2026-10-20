@@ -57,6 +57,69 @@ function getReleaseData() {
 const VERSION_CACHE_KEY = "softwareVersionCache";
 const VERSION_CACHE_DURATION = 12 * 60 * 60 * 1000;
 
+/* sortable column → row property; unknown values always sink to the bottom */
+const SORT_FIELDS = { app: "title", published: "published" };
+
+/* columns that only ever sort one way; any other column toggles on re-click */
+const FIXED_DIR = { app: "asc", published: "desc" };
+
+/* catalog order until a column header is used */
+let releaseSort = { key: null, dir: "asc" };
+
+function isBlank(value) {
+    return value === undefined || value === "" || value === "—";
+}
+
+function sortReleases(rows) {
+    if (!releaseSort.key) return rows;
+
+    const field = SORT_FIELDS[releaseSort.key];
+    const factor = releaseSort.dir === "desc" ? -1 : 1;
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+
+    return [...rows].sort((a, b) => {
+        const [x, y] = [a[field], b[field]];
+
+        if (isBlank(x) || isBlank(y)) {
+            return isBlank(x) === isBlank(y) ? 0 : isBlank(x) ? 1 : -1;
+        }
+
+        return factor * collator.compare(String(x), String(y));
+    });
+}
+
+function renderReleaseTable(container, rows) {
+    const table = fromTemplate("release-table-template");
+    const tbody = table.querySelector("tbody");
+
+    sortReleases(rows).map(createReleaseRow).forEach((row) => tbody.appendChild(row));
+
+    for (const th of table.querySelectorAll("th[data-sort]")) {
+        const active = th.dataset.sort === releaseSort.key;
+
+        th.setAttribute(
+            "aria-sort",
+            active ? (releaseSort.dir === "asc" ? "ascending" : "descending") : "none"
+        );
+
+        th.querySelector("button").addEventListener("click", () => {
+            const key = th.dataset.sort;
+
+            releaseSort = {
+                key,
+                /* Application is always A→Z, Published always newest-first;
+                   any column without a fixed direction toggles on re-click */
+                dir: FIXED_DIR[key]
+                    ?? (active && releaseSort.dir === "asc" ? "desc" : "asc")
+            };
+
+            renderReleaseTable(container, rows);
+        });
+    }
+
+    container.replaceChildren(table);
+}
+
 async function loadSoftwareVersion() {
     const el = document.getElementById("latestVersion");
     if (!el) return;
@@ -85,12 +148,7 @@ async function loadSoftwareVersion() {
         );
     }
 
-    /* assemble the table through templates from data — never cached markup */
-    const table = fromTemplate("release-table-template");
-    const tbody = table.querySelector("tbody");
-    rows.map(createReleaseRow).forEach((row) => tbody.appendChild(row));
-
-    el.replaceChildren(table);
+    renderReleaseTable(el, rows);
 }
 
 async function updateVendorStatus() {

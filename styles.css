@@ -400,6 +400,29 @@ time {
     padding: 2px 3px;
 }
 
+#latestVersion th button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#latestVersion th button:hover,
+#latestVersion th button:focus-visible {
+    color: var(--color-primary);
+}
+
+#latestVersion th[aria-sort="ascending"] button::after {
+    content: " ▲";
+}
+
+#latestVersion th[aria-sort="descending"] button::after {
+    content: " ▼";
+}
+
 .release-details {
     width: 100%;
 }
