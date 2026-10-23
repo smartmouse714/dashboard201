@@ -99,7 +99,7 @@ const SORT_FIELDS = { app: "title", published: "published" };
 const FIXED_DIR = { app: "asc", published: "desc" };
 
 /* catalog order until a column header is used */
-let releaseSort = { key: null, dir: "asc" };
+let releaseSort = { key: "app", dir: "asc" };
 
 function isBlank(value) {
     return value === undefined || value === "" || value === "—";

@@ -167,10 +167,10 @@ export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
  * the release sources above.
  */
 const STATUSPAGE_CLASS = {
-    none: "status-ok",
-    minor: "status-warning",
-    major: "status-incident",
-    critical: "status-incident"
+    none: "status-green",
+    minor: "status-amber",
+    major: "status-red",
+    critical: "status-red"
 };
 
 /* TeamViewer publishes an Atlassian Statuspage payload */
@@ -182,12 +182,12 @@ const statuspagePick = ({ status }) => [
 /* the proxy collapses maintenance, degraded performance and partial
    outage into a single yellow indicator, so name all three candidates */
 const WEBEX_STATES = {
-    green: ["Operational", "status-ok"],
+    green: ["Operational", "status-green"],
     yellow: [
         "Under Maintenance / Degraded Performance / Partial Outage",
-        "status-warning"
+        "status-amber"
     ],
-    red: ["Major Outage", "status-incident"]
+    red: ["Major Outage", "status-red"]
 };
 
 export const VENDOR_CATALOG = [

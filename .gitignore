@@ -10,7 +10,7 @@ Thumbs.db
 .env
 .venv
 
-#denoserver.js
+denoserver.js
 deno.lock
 
 # Logs

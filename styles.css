@@ -21,12 +21,12 @@
     --color-btn-border: #b0b0b0;
     --color-btn-text: #707070;
     --color-text-inverse: #fff;
-    --color-status-ok: #2e7d32;
-    --color-status-incident: #c62828;
-    --color-status-warning: #FFFF00;
-    --color-meter-optimum: #2e7d32;
-    --color-meter-suboptimum: #f9a825;
-    --color-meter-critical: #c62828;
+
+    /* status / meter colours (shared) */
+    --color-status-green: #2e7d32;
+    --color-status-amber: #FFB300;
+    --color-status-red: #c62828;
+
     --radius-sm: 4px;
     --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.1);
     --space-sm: 8px;
@@ -254,15 +254,15 @@ time {
 }
 
 .column meter.meter-ok {
-    --meter-color: var(--color-meter-optimum);
+    --meter-color: var(--color-status-green);
 }
 
 .column meter.meter-warn {
-    --meter-color: var(--color-meter-suboptimum);
+    --meter-color: var(--color-status-amber);
 }
 
 .column meter.meter-critical {
-    --meter-color: var(--color-meter-critical);
+    --meter-color: var(--color-status-red);
 }
 
 .column meter.meter-ok::-webkit-meter-optimum-value,
@@ -365,17 +365,18 @@ time {
     font-weight: 700;
 }
 
-.column>fieldset.vendor-status.status-ok {
-    background-color: var(--color-status-ok);
+.column>fieldset.vendor-status.status-green {
+    background-color: var(--color-status-green);
     color: var(--color-text-inverse);
 }
 
-.column>fieldset.vendor-status.status-warning {
-    background-color: var(--color-status-warning);
+.column>fieldset.vendor-status.status-amber {
+    background-color: var(--color-status-amber);
+    color: var(--color-text);
 }
 
-.column>fieldset.vendor-status.status-incident {
-    background-color: var(--color-status-incident);
+.column>fieldset.vendor-status.status-red {
+    background-color: var(--color-status-red);
     color: var(--color-text-inverse);
 }
 
