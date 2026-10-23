@@ -20,9 +20,10 @@
     --color-border-muted: #e5e5e5;
     --color-btn-border: #b0b0b0;
     --color-btn-text: #707070;
+    --color-text-inverse: #fff;
     --color-status-ok: #2e7d32;
     --color-status-incident: #c62828;
-    --color-status-yellow: #FFFF00;
+    --color-status-warning: #FFFF00;
     --color-meter-optimum: #2e7d32;
     --color-meter-suboptimum: #f9a825;
     --color-meter-critical: #c62828;
@@ -357,31 +358,38 @@ time {
     background-color: rgba(127, 127, 31, 0.1);
 }
 
-.incident {
-    margin-bottom: 1rem;
-    padding: 12px;
-    border: 1px solid #444;
-    border-radius: 6px;
-}
-
-.incident h3 {
-    margin-top: 0;
-    color: #ff9800;
-}
-
-.status-ok {
-    color: var(--color-status-ok);
+/* 3rd-party vendor boxes: the background carries the status and the text
+   follows for contrast. These outrank .column>fieldset:hover, so hover keeps
+   the shadow lift without washing out the colour. */
+.column>fieldset.vendor-status {
     font-weight: 700;
 }
 
-.status-incident {
-    color: var(--color-status-incident);
-    font-weight: 700;
+.column>fieldset.vendor-status.status-ok {
+    background-color: var(--color-status-ok);
+    color: var(--color-text-inverse);
 }
 
-.status-unknown {
-    color: var(--color-status-yellow);
-    font-weight: 700;
+.column>fieldset.vendor-status.status-warning {
+    background-color: var(--color-status-warning);
+}
+
+.column>fieldset.vendor-status.status-incident {
+    background-color: var(--color-status-incident);
+    color: var(--color-text-inverse);
+}
+
+/* a failed fetch has no status to show, so the box keeps the card look */
+.column>fieldset.vendor-status.status-unknown {
+    color: var(--color-btn-text);
+}
+
+/* Chrome paints <legend> above the fieldset background, so the legend
+   borrows the box colour to keep the product name readable */
+.column>fieldset.vendor-status>legend {
+    background-color: inherit;
+    color: inherit;
+    padding: 6px 0;
 }
 
 #latestVersion table,
@@ -425,6 +433,13 @@ time {
 
 .release-details {
     width: 100%;
+}
+
+.last-updated {
+    margin-top: var(--space-sm);
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--color-btn-text);
 }
 
 .release-details summary {

@@ -4,6 +4,7 @@
 export const CONFIG = {
     myTimezone: "Australia/Melbourne",
     refreshUnitInterval: 60_000, // 1 minute
+    releaseCheckInterval: 2 * 60 * 60 * 1000, // 2 hours
     colors: {
         black: "#444",
         white: "#fff"
@@ -160,13 +161,45 @@ export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
     url: `https://api.github.com/repos/${repo}/releases/latest`,
     pick: ghPick
 }));
+/**
+ * Vendor payloads differ per provider, so each entry carries its own
+ * `pick` adapter returning [message, cssClass] — the same contract as
+ * the release sources above.
+ */
+const STATUSPAGE_CLASS = {
+    none: "status-ok",
+    minor: "status-warning",
+    major: "status-incident",
+    critical: "status-incident"
+};
+
+/* TeamViewer publishes an Atlassian Statuspage payload */
+const statuspagePick = ({ status }) => [
+    status.description,
+    STATUSPAGE_CLASS[status.indicator] ?? "status-unknown"
+];
+
+/* the proxy collapses maintenance, degraded performance and partial
+   outage into a single yellow indicator, so name all three candidates */
+const WEBEX_STATES = {
+    green: ["Operational", "status-ok"],
+    yellow: [
+        "Under Maintenance / Degraded Performance / Partial Outage",
+        "status-warning"
+    ],
+    red: ["Major Outage", "status-incident"]
+};
+
 export const VENDOR_CATALOG = [
     {
         product: "TeamViewer",
-        url: "https://status.teamviewer.com/api/v2/summary.json"
+        url: "https://status.teamviewer.com/api/v2/status.json",
+        pick: statuspagePick
     },
     {
-        product: "SendGrid",
-        url: "https://status.twilio.com/api/v2/status.json"
+        product: "WebEx",
+        url: "https://webex-status-proxy.ps4bp.workers.dev/status.json",
+        pick: ({ status }) =>
+            WEBEX_STATES[status.indicator] ?? ["Status Unknown", "status-unknown"]
     }
 ];

@@ -4,6 +4,7 @@ import {
     GH_CATALOG,
     VENDOR_CATALOG
 } from "./config.js";
+import { formatTime } from "./date-utils.js";
 import {
     fromTemplate,
     fill,
@@ -19,16 +20,16 @@ function createReleaseRow({ title, version = "Unknown", published = "—" }) {
 }
 
 function createVendorStatus(product, message, cssClass) {
-    const fieldset = fromTemplate("vendor-status-template");
+    /* the status class colours the whole box; only the vendor name shows,
+       with the detail kept in the accessible name */
+    const status = fromTemplate("vendor-status-template");
 
-    const status = fill(fieldset, {
-        '[data-field="product"]': product,
-        '[data-field="message"]': message
+    status.className = `vendor-status ${cssClass}`;
+    status.setAttribute("aria-label", `${product}: ${message}`);
+
+    return fill(status, {
+        '[data-field="product"]': product
     });
-
-    status.querySelector('[data-field="message"]').className = cssClass;
-
-    return status;
 }
 
 /**
@@ -54,8 +55,42 @@ function getReleaseData() {
     return Promise.all([...GH_CATALOG, FirefoxURI].map(fetchRelease));
 }
 
+/**
+ * Fetch one vendor status source and return plain status data.
+ * The `pick` adapter (provided per vendor in config.js) decouples this
+ * fetcher from each provider's payload shape. On any failure the data
+ * falls back to "Status Unknown".
+ */
+async function fetchVendorStatus({ product, url, pick }) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const [message, cssClass] = pick(await response.json());
+
+        return { product, message, cssClass };
+    } catch {
+        return { product, message: "Status Unknown", cssClass: "status-unknown" };
+    }
+}
+
+function getVendorData() {
+    return Promise.all(VENDOR_CATALOG.map(fetchVendorStatus));
+}
+
 const VERSION_CACHE_KEY = "softwareVersionCache";
-const VERSION_CACHE_DURATION = 12 * 60 * 60 * 1000;
+const VERSION_CACHE_DURATION = CONFIG.releaseCheckInterval;
+
+/* mirror the release refresh time into the "Updated" line under Latest Releases */
+function renderLastUpdate(timestamp) {
+    const el = document.getElementById("lastUpdated");
+    if (!el) return;
+
+    const date = new Date(timestamp);
+
+    el.textContent = formatTime(date, CONFIG.myTimezone);
+    el.dateTime = date.toISOString();
+}
 
 /* sortable column → row property; unknown values always sink to the bottom */
 const SORT_FIELDS = { app: "title", published: "published" };
@@ -133,6 +168,7 @@ async function loadSoftwareVersion() {
 
             if (Date.now() - timestamp < VERSION_CACHE_DURATION) {
                 rows = cachedRows;
+                renderLastUpdate(timestamp);
             }
         } catch {
             /* corrupt or legacy cache → refetch below */
@@ -142,10 +178,12 @@ async function loadSoftwareVersion() {
     if (!rows) {
         rows = await getReleaseData();
 
+        const timestamp = Date.now();
         localStorage.setItem(
             VERSION_CACHE_KEY,
-            JSON.stringify({ rows, timestamp: Date.now() })
+            JSON.stringify({ rows, timestamp })
         );
+        renderLastUpdate(timestamp);
     }
 
     renderReleaseTable(el, rows);
@@ -157,77 +195,10 @@ async function updateVendorStatus() {
 
     const fragment = document.createDocumentFragment();
 
-    for (const vendor of VENDOR_CATALOG) {
-        switch (vendor.product) {
-            case "TeamViewer":
-                try {
-                    const response = await fetch(vendor.url);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    const data = await response.json();
-
-                    if (!data.incidents || data.incidents.length === 0) {
-                        fragment.appendChild(
-                            createVendorStatus(vendor.product, "OK", "status-ok")
-                        );
-                    } else {
-                        const incidents = data.incidents.map(i => i.name).join(", ");
-
-                        fragment.appendChild(
-                            createVendorStatus(
-                                vendor.product,
-                                incidents,
-                                "status-incident"
-                            )
-                        );
-                    }
-                } catch {
-                    fragment.appendChild(
-                        createVendorStatus(
-                            vendor.product,
-                            "Status Unknown",
-                            "status-unknown"
-                        )
-                    );
-                }
-                break;
-
-            case "SendGrid":
-                try {
-                    const response = await fetch(vendor.url);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    const data = await response.json();
-                    const indicator = data.status.indicator;
-
-                    const statusClass = ["minor", "major", "critical"].includes(indicator)
-                        ? "status-incident"
-                        : indicator === "none"
-                            ? "status-ok"
-                            : "status-unknown";
-
-                    fragment.appendChild(
-                        createVendorStatus(
-                            vendor.product,
-                            data.status.description,
-                            statusClass
-                        )
-                    );
-                } catch {
-                    fragment.appendChild(
-                        createVendorStatus(
-                            vendor.product,
-                            "Status Unknown",
-                            "status-unknown"
-                        )
-                    );
-                }
-                break;
-
-            default:
-                console.log(vendor.product, "default");
-        }
-    }
+    (await getVendorData())
+        .forEach(({ product, message, cssClass }) =>
+            fragment.appendChild(createVendorStatus(product, message, cssClass))
+        );
 
     swapRendered(
         anchor.parentElement,
