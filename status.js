@@ -92,13 +92,13 @@ function renderLastUpdate(timestamp) {
     el.dateTime = date.toISOString();
 }
 
-/* sortable column → row property; unknown values always sink to the bottom */
-const SORT_FIELDS = { app: "title", published: "published" };
+/* sortable column → row property and its one fixed direction */
+const SORT_COLUMNS = {
+    app: { field: "title", dir: "asc" },
+    published: { field: "published", dir: "desc" }
+};
 
-/* columns that only ever sort one way; any other column toggles on re-click */
-const FIXED_DIR = { app: "asc", published: "desc" };
-
-/* catalog order until a column header is used */
+/* Latest Releases open sorted by application, A→Z */
 let releaseSort = { key: "app", dir: "asc" };
 
 function isBlank(value) {
@@ -106,10 +106,8 @@ function isBlank(value) {
 }
 
 function sortReleases(rows) {
-    if (!releaseSort.key) return rows;
-
-    const field = SORT_FIELDS[releaseSort.key];
-    const factor = releaseSort.dir === "desc" ? -1 : 1;
+    const { field, dir } = SORT_COLUMNS[releaseSort.key];
+    const factor = dir === "desc" ? -1 : 1;
     const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     return [...rows].sort((a, b) => {
@@ -130,24 +128,16 @@ function renderReleaseTable(container, rows) {
     sortReleases(rows).map(createReleaseRow).forEach((row) => tbody.appendChild(row));
 
     for (const th of table.querySelectorAll("th[data-sort]")) {
-        const active = th.dataset.sort === releaseSort.key;
+        const key = th.dataset.sort;
+        const active = key === releaseSort.key;
 
         th.setAttribute(
             "aria-sort",
-            active ? (releaseSort.dir === "asc" ? "ascending" : "descending") : "none"
+            active ? (SORT_COLUMNS[key].dir === "asc" ? "ascending" : "descending") : "none"
         );
 
         th.querySelector("button").addEventListener("click", () => {
-            const key = th.dataset.sort;
-
-            releaseSort = {
-                key,
-                /* Application is always A→Z, Published always newest-first;
-                   any column without a fixed direction toggles on re-click */
-                dir: FIXED_DIR[key]
-                    ?? (active && releaseSort.dir === "asc" ? "desc" : "asc")
-            };
-
+            releaseSort = { key, dir: SORT_COLUMNS[key].dir };
             renderReleaseTable(container, rows);
         });
     }
@@ -208,16 +198,12 @@ async function updateVendorStatus() {
     );
 }
 
-function refreshAllStatuses() {
-    updateVendorStatus();
-}
-
 const refresh30minInterval = CONFIG.refreshUnitInterval * 30;
 
 export function startStatus() {
     loadSoftwareVersion();
-    refreshAllStatuses();
+    updateVendorStatus();
 
-    setInterval(refreshAllStatuses, refresh30minInterval);
+    setInterval(updateVendorStatus, refresh30minInterval);
     setInterval(loadSoftwareVersion, VERSION_CACHE_DURATION);
 }

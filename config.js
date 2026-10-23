@@ -23,12 +23,8 @@ export const TIMEZONES = [
 ];
 
 /**
-DST_ZONES = {
-    AU: "Australia/Sydney",
-    CA: "America/Denver",
-    NZ: "Pacific/Auckland",
-    UK: "Europe/London"
-};
+ * DST zone → IANA timezone, derived from the TIMEZONES entries that opt in
+ * with a dstRule key.
  */
 export const DST_ZONES = Object.fromEntries(
     TIMEZONES
@@ -61,30 +57,6 @@ const DST_RULE_DEFS = {
         end: { month: 9, last: true, hour: 3 }
     }
 };
-/**
-DST_RULES = {
-    AU: {
-        zone: DST_ZONES.AU,
-        start: FIRST_SUN(9, 2),
-        end: FIRST_SUN(3, 3)
-    },
-    CA: {
-        zone: DST_ZONES.CA,
-        start: SECOND_SUN(2, 2),
-        end: FIRST_SUN(10, 3)
-    },
-    NZ: {
-        zone: DST_ZONES.NZ,
-        start: LAST_SUN(8, 2),
-        end: FIRST_SUN(3, 3)
-    },
-    UK: {
-        zone: DST_ZONES.UK,
-        start: LAST_SUN(2, 2),
-        end: LAST_SUN(9, 3)
-    }
-};
- */
 export const DST_RULES = Object.fromEntries(
     Object.entries(DST_RULE_DEFS).map(([key, rule]) => [
         key,
@@ -127,30 +99,6 @@ const repos = {
     "Visual Studio Code": "microsoft/vscode",
     "Windows Terminal": "microsoft/terminal"
 };
-/**
-GH_CATALOG = [
-    {
-        title: "Coreutils for Windows",
-        url: "https://api.github.com/repos/microsoft/coreutils/releases/latest"
-    },
-    {
-        title: "Greenshot",
-        url: "https://api.github.com/repos/greenshot/greenshot/releases/latest"
-    },
-    {
-        title: "PowerShell",
-        url: "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
-    },
-    {
-        title: "Visual Studio Code",
-        url: "https://api.github.com/repos/microsoft/vscode/releases/latest"
-    },
-    {
-        title: "Windows Terminal",
-        url: "https://api.github.com/repos/microsoft/terminal/releases/latest"
-    }
-];
- */
 const ghPick = (release) => [
     release.tag_name,
     release.published_at.slice(0, 10)

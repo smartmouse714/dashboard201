@@ -9,25 +9,13 @@ import {
     formatTime
 } from "./date-utils.js";
 
-/**
-DAY_OFFSETS = [
-    { id: "PerthDayOffset",     timeZone: "Australia/Perth" },
-    { id: "DarwinDayOffset",    timeZone: "Australia/Darwin" },
-    { id: "SydneyDayOffset",    timeZone: "Australia/Sydney" },
-    { id: "BrisbaneDayOffset",  timeZone: "Australia/Brisbane" },
-    { id: "AdelaideDayOffset",  timeZone: "Australia/Adelaide" },
-    { id: "AucklandDayOffset",  timeZone: "Pacific/Auckland" },
-    { id: "LondonDayOffset",    timeZone: "Europe/London" },
-    { id: "DenverDayOffset",    timeZone: "America/Denver" }
-];
- */
+/* day-offset label spans follow the TIMEZONES labels */
 const DAY_OFFSETS = TIMEZONES.map(({ label, timeZone }) => ({
     id: `${label}DayOffset`,
     timeZone
 }));
 
 const getCity = zone => zone.split("/").at(-1);
-// export const getCity = (timeZone) => timeZone?.split("/").pop()?.replaceAll("_", " ") ?? "";
 
 const cityElements = new Map();
 

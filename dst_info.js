@@ -176,19 +176,12 @@ function refreshCountdowns(now = new Date()) {
         const days = countdownDays(nextChange - now);
 
         document.querySelectorAll(selector).forEach(el => {
-            switch (days) {
-                case null: {
-                    el.textContent = "Something is wrong";
-                    break;
-                }
-                case 0: {
-                    el.textContent = "Time change is occurring now";
-                    break;
-                }
-                default: {
-                    el.replaceChildren("Countdown ", createCountdownMeter(days), ` ${days} days`);
-                    break;
-                }
+            if (days === null) {
+                el.textContent = "Something is wrong";
+            } else if (Number(days) === 0) {
+                el.textContent = "Time change is occurring now";
+            } else {
+                el.replaceChildren("Countdown ", createCountdownMeter(days), ` ${days} days`);
             }
         });
     }
@@ -216,63 +209,26 @@ function setNextText(elements, event, date, timeZone) {
     });
 }
 
-function updateDSTUI({ au, ca, nz, uk }) {
-    setDSTLegendState(["LondonClock"], uk.isDST);
-    setDSTLegendState(["DenverClock"], ca.isDST);
-    setDSTLegendState(["AucklandClock"], nz.isDST);
-    setDSTLegendState(["SydneyClock", "AdelaideClock"], au.isDST);
+/* zone id → where its change text lives and which zone formats the dates */
+const DST_TEXT_ZONES = [
+    { id: "uk", last: "#ukLastChange", next: "#ukNextChange", zone: DST_ZONES.UK },
+    { id: "ca", last: "#caLastChange", next: "#caNextChange", zone: DST_ZONES.CA },
+    { id: "nz", last: "#nzLastChange", next: "#nzNextChange", zone: DST_ZONES.NZ },
+    { id: "au", last: ".auLastChange", next: ".auNextChange", zone: DST_ZONES.AU }
+];
 
-    setChangeText(
-        [document.getElementById("ukLastChange")].filter(Boolean),
-        uk.lastEvent,
-        uk.lastChange,
-        DST_ZONES.UK
-    );
-    setNextText(
-        [document.getElementById("ukNextChange")].filter(Boolean),
-        uk.nextEvent,
-        uk.nextChange,
-        DST_ZONES.UK
-    );
+function updateDSTUI(details) {
+    setDSTLegendState(["LondonClock"], details.uk.isDST);
+    setDSTLegendState(["DenverClock"], details.ca.isDST);
+    setDSTLegendState(["AucklandClock"], details.nz.isDST);
+    setDSTLegendState(["SydneyClock", "AdelaideClock"], details.au.isDST);
 
-    setChangeText(
-        [document.getElementById("caLastChange")].filter(Boolean),
-        ca.lastEvent,
-        ca.lastChange,
-        DST_ZONES.CA
-    );
-    setNextText(
-        [document.getElementById("caNextChange")].filter(Boolean),
-        ca.nextEvent,
-        ca.nextChange,
-        DST_ZONES.CA
-    );
+    for (const { id, last, next, zone } of DST_TEXT_ZONES) {
+        const { lastEvent, lastChange, nextEvent, nextChange } = details[id];
 
-    setChangeText(
-        [document.getElementById("nzLastChange")].filter(Boolean),
-        nz.lastEvent,
-        nz.lastChange,
-        DST_ZONES.NZ
-    );
-    setNextText(
-        [document.getElementById("nzNextChange")].filter(Boolean),
-        nz.nextEvent,
-        nz.nextChange,
-        DST_ZONES.NZ
-    );
-
-    setChangeText(
-        document.querySelectorAll(".auLastChange"),
-        au.lastEvent,
-        au.lastChange,
-        DST_ZONES.AU
-    );
-    setNextText(
-        document.querySelectorAll(".auNextChange"),
-        au.nextEvent,
-        au.nextChange,
-        DST_ZONES.AU
-    );
+        setChangeText(document.querySelectorAll(last), lastEvent, lastChange, zone);
+        setNextText(document.querySelectorAll(next), nextEvent, nextChange, zone);
+    }
 }
 
 export function startDSTInfo(now = new Date()) {

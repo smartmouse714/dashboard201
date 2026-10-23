@@ -2,7 +2,7 @@
  * Show this month's public holidays under the HQ clock.
  * Regions: Canada–Alberta, UK–England, Australia–Victoria.
  * Fetches from Nager.Date API and caches by year+country.
- * If none this month, show nothing.
+ * If the month has none, show a "No holidays" list.
  */
 import {
     HolidayAPI_BASE,
@@ -133,11 +133,10 @@ async function renderHolidays(now) {
             nodes = emptyList;
         } else {
             const groups = groupByRegion(holidays);
-            const hideEmpty = document.getElementById("hideEmptyRegions")?.checked ?? true;
             const fragment = document.createDocumentFragment();
 
             for (const [region, items] of groups) {
-                if (hideEmpty && items.length === 0) continue;
+                if (items.length === 0) continue;
 
                 const group = fromTemplate("holiday-region-template");
                 fill(group, { '[data-field="region"]': region });
@@ -188,9 +187,4 @@ export function startHolidays(now) {
         ?.addEventListener("click", () => navigateHolidays(-1));
     document.getElementById("holidayNext")
         ?.addEventListener("click", () => navigateHolidays(1));
-
-    const toggle = document.getElementById("hideEmptyRegions");
-    if (toggle) {
-        toggle.addEventListener("change", () => renderHolidays(new Date()));
-    }
 }
