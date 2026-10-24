@@ -11,6 +11,9 @@ export const CONFIG = {
     }
 };
 
+export const CURRENCY_RATES_URL =
+    "https://forex-proxy.ps4bp.workers.dev/?basket=AUD%2CNZD%2CUSD";
+
 export const TIMEZONES = [
     { label: "Perth", timeZone: "Australia/Perth" },
     { label: "Darwin", timeZone: "Australia/Darwin" },

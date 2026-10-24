@@ -395,18 +395,59 @@ time {
 
 #latestVersion table,
 #latestVersion th,
-#latestVersion td {
+#latestVersion td,
+#currencyRates table,
+#currencyRates th,
+#currencyRates td {
     border: 1px solid black;
 }
 
-#latestVersion table {
+#latestVersion table,
+#currencyRates table {
     border-collapse: collapse;
     margin: 0 auto;
 }
 
 #latestVersion th,
-#latestVersion td {
+#latestVersion td,
+#currencyRates th,
+#currencyRates td {
     padding: 2px 3px;
+}
+
+#latestVersion tbody tr:nth-child(even),
+#currencyRates tbody tr:nth-child(even) {
+    background-color: var(--color-bg-hover);
+}
+
+.release-details,
+.currency-details {
+    width: 100%;
+}
+
+#latestVersion,
+#currencyRates {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.currency-details summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.currency-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.currency-details summary::before {
+    content: "▸";
+    display: inline-block;
+    width: 1em;
+}
+
+.currency-details[open] summary::before {
+    content: "▾";
 }
 
 #latestVersion th button {
