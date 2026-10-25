@@ -394,38 +394,37 @@ time {
 }
 
 #latestVersion table,
-#latestVersion th,
-#latestVersion td,
-#currencyRates table,
-#currencyRates th,
-#currencyRates td {
-    border: 1px solid var(--color-border);
-}
-
-#latestVersion table,
 #currencyRates table {
     border-collapse: collapse;
     margin: 0 auto;
     width: 100%;
+    font-size: 0.85rem;
 }
 
 #latestVersion th,
 #latestVersion td,
 #currencyRates th,
 #currencyRates td {
+    border: 1px solid var(--color-border);
     padding: 4px 6px;
-    font-size: 0.85rem;
+    text-align: left;
+}
+
+#latestVersion thead th,
+#currencyRates thead th {
+    background-color: var(--color-bg-muted);
+    font-weight: 600;
+}
+
+#currencyRates th[scope="row"] {
+    background-color: var(--color-bg-muted);
+    font-weight: 600;
+    text-align: left;
 }
 
 #latestVersion tbody tr:nth-child(even),
 #currencyRates tbody tr:nth-child(even) {
     background-color: var(--color-bg-hover);
-}
-
-#latestVersion th,
-#currencyRates th {
-    background-color: var(--color-bg-muted);
-    font-weight: 600;
 }
 
 .release-details,

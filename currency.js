@@ -10,7 +10,7 @@ function createCurrencyRow(currency, rates) {
         throw new Error(`Invalid rate data for ${currency}`);
     }
 
-    const midValue = rates[2];
+    const midValue = rates[4];
     if (typeof midValue !== "number") {
         throw new Error(`Invalid rate data for ${currency}`);
     }
