@@ -129,10 +129,11 @@ function getDSTDetails(startRule, endRule, timeZone, now, southern = false) {
 
 function getDSTData(now) {
     return {
-        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.NZ, now, true),
-        au: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.AU, now, true),
-        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.UK, now),
-        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.CA, now)
+        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.AUCKLAND, now, true),
+        au1: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.SYDNEY, now, true),
+        au2: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.ADELAIDE, now, true),
+        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.LONDON, now),
+        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.DENVER, now)
     };
 }
 
@@ -163,13 +164,13 @@ function createCountdownMeter(days) {
 }
 
 function refreshCountdowns(now = new Date()) {
-    const { au, ca, nz, uk } = getDSTData(now);
+    const { au1, au2, ca, nz, uk } = getDSTData(now);
     const targets = [
         { nextChange: ca.nextChange, selector: ".caCountdown" },
         { nextChange: uk.nextChange, selector: ".ukCountdown" },
         { nextChange: nz.nextChange, selector: ".nzCountdown" },
-        { nextChange: au.nextChange, selector: ".au1Countdown" },
-        { nextChange: au.nextChange, selector: ".au2Countdown" }
+        { nextChange: au1.nextChange, selector: ".au1Countdown" },
+        { nextChange: au2.nextChange, selector: ".au2Countdown" }
     ];
 
     for (const { nextChange, selector } of targets) {
@@ -211,17 +212,19 @@ function setNextText(elements, event, date, timeZone) {
 
 /* zone id → where its change text lives and which zone formats the dates */
 const DST_TEXT_ZONES = [
-    { id: "uk", last: "#ukLastChange", next: "#ukNextChange", zone: DST_ZONES.UK },
-    { id: "ca", last: "#caLastChange", next: "#caNextChange", zone: DST_ZONES.CA },
-    { id: "nz", last: "#nzLastChange", next: "#nzNextChange", zone: DST_ZONES.NZ },
-    { id: "au", last: ".auLastChange", next: ".auNextChange", zone: DST_ZONES.AU }
+    { id: "uk", last: "#ukLastChange", next: "#ukNextChange", zone: DST_ZONES.LONDON },
+    { id: "ca", last: "#caLastChange", next: "#caNextChange", zone: DST_ZONES.DENVER },
+    { id: "nz", last: "#nzLastChange", next: "#nzNextChange", zone: DST_ZONES.AUCKLAND },
+    { id: "au1", last: ".au1LastChange", next: ".au1NextChange", zone: DST_ZONES.SYDNEY },
+    { id: "au2", last: ".au2LastChange", next: ".au2NextChange", zone: DST_ZONES.ADELAIDE }
 ];
 
 function updateDSTUI(details) {
     setDSTLegendState(["LondonClock"], details.uk.isDST);
     setDSTLegendState(["DenverClock"], details.ca.isDST);
     setDSTLegendState(["AucklandClock"], details.nz.isDST);
-    setDSTLegendState(["SydneyClock", "AdelaideClock"], details.au.isDST);
+    setDSTLegendState(["SydneyClock"], details.au1.isDST);
+    setDSTLegendState(["AdelaideClock"], details.au2.isDST);
 
     for (const { id, last, next, zone } of DST_TEXT_ZONES) {
         const { lastEvent, lastChange, nextEvent, nextChange } = details[id];

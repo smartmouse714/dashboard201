@@ -397,7 +397,7 @@ time {
 #currencyRates table {
     border-collapse: collapse;
     margin: 0 auto;
-    width: 100%;
+    width: fit-content;
     font-size: 0.85rem;
 }
 
@@ -422,6 +422,10 @@ time {
     text-align: left;
 }
 
+#currencyRates td[data-field="middle"] {
+    text-align: right;
+}
+
 #latestVersion tbody tr:nth-child(even),
 #currencyRates tbody tr:nth-child(even) {
     background-color: var(--color-bg-hover);
@@ -436,6 +440,8 @@ time {
 #currencyRates {
     max-width: 100%;
     overflow-x: auto;
+    display: flex;
+    justify-content: center;
 }
 
 .release-details summary,

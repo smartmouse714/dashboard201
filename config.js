@@ -16,7 +16,7 @@ export const TIMEZONES = [
     { label: "Darwin", timeZone: "Australia/Darwin" },
     { label: "Sydney", timeZone: "Australia/Sydney", dstRule: "AU" },
     { label: "Brisbane", timeZone: "Australia/Brisbane" },
-    { label: "Adelaide", timeZone: "Australia/Adelaide" },
+    { label: "Adelaide", timeZone: "Australia/Adelaide", dstRule: "AU" },
     { label: "Auckland", timeZone: "Pacific/Auckland", dstRule: "NZ" },
     { label: "London", timeZone: "Europe/London", dstRule: "UK" },
     { label: "Denver", timeZone: "America/Denver", dstRule: "CA" }
@@ -29,7 +29,7 @@ export const TIMEZONES = [
 export const DST_ZONES = Object.fromEntries(
     TIMEZONES
         .filter(({ dstRule }) => dstRule)
-        .map(({ dstRule, timeZone }) => [dstRule, timeZone])
+        .map(({ label, timeZone }) => [label.toUpperCase(), timeZone])
 );
 
 /**
@@ -57,15 +57,7 @@ const DST_RULE_DEFS = {
         end: { month: 9, last: true, hour: 3 }
     }
 };
-export const DST_RULES = Object.fromEntries(
-    Object.entries(DST_RULE_DEFS).map(([key, rule]) => [
-        key,
-        {
-            zone: DST_ZONES[key],
-            ...rule
-        }
-    ])
-);
+export const DST_RULES = DST_RULE_DEFS;
 
 /**
  * Holiday filters
