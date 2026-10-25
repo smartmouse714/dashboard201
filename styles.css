@@ -399,25 +399,33 @@ time {
 #currencyRates table,
 #currencyRates th,
 #currencyRates td {
-    border: 1px solid black;
+    border: 1px solid var(--color-border);
 }
 
 #latestVersion table,
 #currencyRates table {
     border-collapse: collapse;
     margin: 0 auto;
+    width: 100%;
 }
 
 #latestVersion th,
 #latestVersion td,
 #currencyRates th,
 #currencyRates td {
-    padding: 2px 3px;
+    padding: 4px 6px;
+    font-size: 0.85rem;
 }
 
 #latestVersion tbody tr:nth-child(even),
 #currencyRates tbody tr:nth-child(even) {
     background-color: var(--color-bg-hover);
+}
+
+#latestVersion th,
+#currencyRates th {
+    background-color: var(--color-bg-muted);
+    font-weight: 600;
 }
 
 .release-details,
@@ -431,23 +439,43 @@ time {
     overflow-x: auto;
 }
 
+.release-details summary,
 .currency-details summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     list-style: none;
     cursor: pointer;
+    user-select: none;
 }
 
+.release-details summary::-webkit-details-marker,
 .currency-details summary::-webkit-details-marker {
     display: none;
 }
 
+.release-details summary::before,
 .currency-details summary::before {
     content: "▸";
-    display: inline-block;
-    width: 1em;
+    margin-right: 0.35em;
+    transition: transform var(--transition);
 }
 
+.release-details[open] summary::before,
 .currency-details[open] summary::before {
-    content: "▾";
+    transform: rotate(90deg);
+}
+
+.release-details[open] summary .column-heading,
+.currency-details[open] summary .column-heading {
+    color: var(--color-primary);
+}
+
+.release-details summary:hover .column-heading,
+.release-details summary:focus-visible .column-heading,
+.currency-details summary:hover .column-heading,
+.currency-details summary:focus-visible .column-heading {
+    color: var(--color-primary);
 }
 
 #latestVersion th button {
@@ -473,47 +501,11 @@ time {
     content: " ▼";
 }
 
-.release-details {
-    width: 100%;
-}
-
 .last-updated {
     margin-top: var(--space-sm);
     text-align: center;
     font-size: 0.75rem;
     color: var(--color-btn-text);
-}
-
-.release-details summary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    list-style: none;
-    cursor: pointer;
-    user-select: none;
-}
-
-.release-details summary::-webkit-details-marker {
-    display: none;
-}
-
-.release-details summary::before {
-    content: "▸";
-    margin-right: 0.35em;
-    transition: transform var(--transition);
-}
-
-.release-details[open] summary::before {
-    transform: rotate(90deg);
-}
-
-.release-details[open] summary .column-heading {
-    color: var(--color-primary);
-}
-
-.release-details summary:hover .column-heading,
-.release-details summary:focus-visible .column-heading {
-    color: var(--color-primary);
 }
 
 @media (max-width: 640px) {

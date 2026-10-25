@@ -11,9 +11,6 @@ export const CONFIG = {
     }
 };
 
-export const CURRENCY_RATES_URL =
-    "https://forex-proxy.ps4bp.workers.dev/?basket=AUD%2CNZD%2CUSD";
-
 export const TIMEZONES = [
     { label: "Perth", timeZone: "Australia/Perth" },
     { label: "Darwin", timeZone: "Australia/Darwin" },
@@ -154,3 +151,13 @@ export const VENDOR_CATALOG = [
             WEBEX_STATES[status.indicator] ?? ["Status Unknown", "status-unknown"]
     }
 ];
+
+/**
+ * FX
+ */
+const BASKET = ["AUD", "NZD", "USD"];
+
+export const CURRENCY_RATES_URL =
+    `https://forex-proxy.ps4bp.workers.dev/?basket=${encodeURIComponent(
+        BASKET.join(",")
+    )}`;

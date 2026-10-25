@@ -2,24 +2,22 @@ import { fill, fromTemplate } from "./dom-utils.js";
 import { CURRENCY_RATES_URL } from "./config.js";
 
 function formatRate(value) {
-    return value === null ? "—" : value.toFixed(2);
+    return typeof value === "number" ? value.toFixed(2) : "—";
 }
 
 function createCurrencyRow(currency, rates) {
-    if (
-        !Array.isArray(rates) ||
-        rates.length !== 6 ||
-        !rates.slice(0, 5).every((rate) => rate === null || typeof rate === "number") ||
-        typeof rates[5] !== "string"
-    ) {
+    if (!Array.isArray(rates)) {
+        throw new Error(`Invalid rate data for ${currency}`);
+    }
+
+    const midValue = rates[2];
+    if (typeof midValue !== "number") {
         throw new Error(`Invalid rate data for ${currency}`);
     }
 
     return fill(fromTemplate("currency-row-template"), {
         '[data-field="currency"]': currency,
-
-        '[data-field="middle"]': formatRate(rates[4]),
-        '[data-field="quoted"]': rates[5]
+        '[data-field="middle"]': formatRate(midValue)
     });
 }
 
@@ -39,7 +37,8 @@ async function loadCurrencyRates() {
         const table = fromTemplate("currency-table-template");
         const tbody = table.querySelector("tbody");
 
-        for (const [currency, rates] of Object.entries(data)) {
+        const entries = Object.entries(data).sort(([a], [b]) => a.localeCompare(b));
+        for (const [currency, rates] of entries) {
             tbody.appendChild(createCurrencyRow(currency, rates));
         }
 
