@@ -1,6 +1,6 @@
 import {
     CONFIG,
-    DST_RULES,
+    DST_RULE_DEFS as DST_RULES,
     DST_ZONES
 } from "./config.js";
 import { fromTemplate } from "./dom-utils.js";
@@ -129,11 +129,11 @@ function getDSTDetails(startRule, endRule, timeZone, now, southern = false) {
 
 function getDSTData(now) {
     return {
-        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.AUCKLAND, now, true),
-        au1: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.SYDNEY, now, true),
-        au2: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.ADELAIDE, now, true),
-        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.LONDON, now),
-        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.DENVER, now)
+        nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.Auckland, now, true),
+        au1: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.Sydney, now, true),
+        au2: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.Adelaide, now, true),
+        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.London, now),
+        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.Denver, now)
     };
 }
 
@@ -212,11 +212,11 @@ function setNextText(elements, event, date, timeZone) {
 
 /* zone id → where its change text lives and which zone formats the dates */
 const DST_TEXT_ZONES = [
-    { id: "uk", last: "#ukLastChange", next: "#ukNextChange", zone: DST_ZONES.LONDON },
-    { id: "ca", last: "#caLastChange", next: "#caNextChange", zone: DST_ZONES.DENVER },
-    { id: "nz", last: "#nzLastChange", next: "#nzNextChange", zone: DST_ZONES.AUCKLAND },
-    { id: "au1", last: ".au1LastChange", next: ".au1NextChange", zone: DST_ZONES.SYDNEY },
-    { id: "au2", last: ".au2LastChange", next: ".au2NextChange", zone: DST_ZONES.ADELAIDE }
+    { id: "uk", last: "#ukLastChange", next: "#ukNextChange", zone: DST_ZONES.London },
+    { id: "ca", last: "#caLastChange", next: "#caNextChange", zone: DST_ZONES.Denver },
+    { id: "nz", last: "#nzLastChange", next: "#nzNextChange", zone: DST_ZONES.Auckland },
+    { id: "au1", last: ".au1LastChange", next: ".au1NextChange", zone: DST_ZONES.Sydney },
+    { id: "au2", last: ".au2LastChange", next: ".au2NextChange", zone: DST_ZONES.Adelaide }
 ];
 
 function updateDSTUI(details) {

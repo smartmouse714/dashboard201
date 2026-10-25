@@ -29,7 +29,7 @@ export const TIMEZONES = [
 export const DST_ZONES = Object.fromEntries(
     TIMEZONES
         .filter(({ dstRule }) => dstRule)
-        .map(({ label, timeZone }) => [label.toUpperCase(), timeZone])
+        .map(({ label, timeZone }) => [label, timeZone])
 );
 
 /**
@@ -39,7 +39,7 @@ export const DST_ZONES = Object.fromEntries(
  *   UK  – starts last Sunday of March,     ends last Sunday of October
  *   CA  – starts second Sunday of March,   ends first Sunday of November
  */
-const DST_RULE_DEFS = {
+export const DST_RULE_DEFS = {
     AU: {
         start: { month: 9, nth: 1, hour: 2 },
         end: { month: 3, nth: 1, hour: 3 }
@@ -57,7 +57,6 @@ const DST_RULE_DEFS = {
         end: { month: 9, last: true, hour: 3 }
     }
 };
-export const DST_RULES = DST_RULE_DEFS;
 
 /**
  * Holiday filters
