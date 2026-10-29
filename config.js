@@ -19,7 +19,7 @@ export const TIMEZONES = [
     { label: "Adelaide", timeZone: "Australia/Adelaide", dstRule: "AU" },
     { label: "Auckland", timeZone: "Pacific/Auckland", dstRule: "NZ" },
     { label: "London", timeZone: "Europe/London", dstRule: "UK" },
-    { label: "Denver", timeZone: "America/Denver", dstRule: "CA" }
+    { label: "Calgary", timeZone: "America/Edmonton" }
 ];
 
 /**
@@ -37,16 +37,11 @@ export const DST_ZONES = Object.fromEntries(
  *   NZ  – starts last Sunday of September, ends first Sunday of April
  *   AU  – starts first Sunday of October,  ends first Sunday of April
  *   UK  – starts last Sunday of March,     ends last Sunday of October
- *   CA  – starts second Sunday of March,   ends first Sunday of November
  */
 export const DST_RULE_DEFS = {
     AU: {
         start: { month: 9, nth: 1, hour: 2 },
         end: { month: 3, nth: 1, hour: 3 }
-    },
-    CA: {
-        start: { month: 2, nth: 2, hour: 2 },
-        end: { month: 10, nth: 1, hour: 3 }
     },
     NZ: {
         start: { month: 8, last: true, hour: 2 },
@@ -133,11 +128,13 @@ export const VENDOR_CATALOG = [
     {
         product: "TeamViewer",
         url: "https://status.teamviewer.com/api/v2/status.json",
+        statusUrl: "https://status.teamviewer.com",
         pick: statuspagePick
     },
     {
         product: "WebEx",
         url: "https://webex-status-proxy.ps4bp.workers.dev/status.json",
+        statusUrl: "https://status.webex.com",
         pick: ({ status }) =>
             WEBEX_STATES[status.indicator] ?? ["Status Unknown", "status-unknown"]
     }

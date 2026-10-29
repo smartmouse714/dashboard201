@@ -19,17 +19,24 @@ function createReleaseRow({ title, version = "Unknown", published = "—" }) {
     });
 }
 
-function createVendorStatus(product, message, cssClass) {
-    /* the status class colours the whole box; only the vendor name shows,
-       with the detail kept in the accessible name */
+function createVendorStatus(product, message, cssClass, statusUrl) {
     const status = fromTemplate("vendor-status-template");
 
     status.className = `vendor-status ${cssClass}`;
     status.setAttribute("aria-label", `${product}: ${message}`);
+    status.title = message;
 
-    return fill(status, {
+    fill(status, {
         '[data-field="product"]': product
     });
+
+    const link = status.querySelector('[data-field="product"]');
+    link.href = statusUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.setAttribute("aria-label", `${product}: ${message}. Open status page`);
+
+    return status;
 }
 
 /**
@@ -61,16 +68,21 @@ function getReleaseData() {
  * fetcher from each provider's payload shape. On any failure the data
  * falls back to "Status Unknown".
  */
-async function fetchVendorStatus({ product, url, pick }) {
+async function fetchVendorStatus({ product, url, statusUrl, pick }) {
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const [message, cssClass] = pick(await response.json());
 
-        return { product, message, cssClass };
+        return { product, message, cssClass, statusUrl };
     } catch {
-        return { product, message: "Status Unknown", cssClass: "status-unknown" };
+        return {
+            product,
+            message: "Status Unknown",
+            cssClass: "status-unknown",
+            statusUrl
+        };
     }
 }
 
@@ -186,8 +198,8 @@ async function updateVendorStatus() {
     const fragment = document.createDocumentFragment();
 
     (await getVendorData())
-        .forEach(({ product, message, cssClass }) =>
-            fragment.appendChild(createVendorStatus(product, message, cssClass))
+        .forEach(({ product, message, cssClass, statusUrl }) =>
+            fragment.appendChild(createVendorStatus(product, message, cssClass, statusUrl))
         );
 
     swapRendered(

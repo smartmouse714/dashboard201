@@ -45,7 +45,6 @@
                 <legend>Canberra, Hobart, Melbourne, Sydney</legend>
                 <details>
                     <summary>
-                        <span class="visually-hidden">daylight saving details. Current time: </span>
                         <time id="SydneyClock"></time><span id="SydneyDayOffset" class="day-offset"></span>
                     </summary>
                     <span class="au1LastChange dstChange"></span>
@@ -61,8 +60,6 @@
                 <legend>Adelaide</legend>
                 <details>
                     <summary>
-                        <span class="visually-hidden">daylight saving details. Current time:
-                        </span>
                         <time id="AdelaideClock"></time><span id="AdelaideDayOffset" class="day-offset"></span>
                     </summary>
                     <span class="au2LastChange dstChange"></span>
@@ -83,7 +80,6 @@
                 </dialog>
                 <details>
                     <summary>
-                        <span class="visually-hidden">daylight saving details. Current time: </span>
                         <time id="AucklandClock"></time>
                         <span id="AucklandDayOffset" class="day-offset"></span>
                     </summary>
@@ -111,23 +107,10 @@
                     <span class="ukCountdown"></span>
                 </details>
             </fieldset>
-            <fieldset title="Todd Zmetana">
-                <legend>Calgary, Canada<button aria-label="About CA DST" command="show-modal"
-                        commandfor="dialogCA">i</button></legend>
-                <dialog id="dialogCA" class="info-dialog">
-                    <p>DST starts on the second Sunday of March and ends on the first Sunday of November in Canada.
-                    </p>
-                    <button command="close" commandfor="dialogCA">OK</button>
-                </dialog>
-                <details>
-                    <summary>
-                        <time id="DenverClock"></time>
-                        <span id="DenverDayOffset" class="day-offset"></span>
-                    </summary>
-                    <span id="caLastChange" class="dstChange"></span>
-                    <span id="caNextChange" class="dstChange"></span>
-                    <span class="caCountdown"></span>
-                </details>
+            <fieldset>
+                <legend>Calgary, Canada</legend>
+                <time id="CalgaryClock"></time>
+                <span id="CalgaryDayOffset" class="day-offset"></span>
             </fieldset>
         </section>
         <section class="column">
@@ -179,7 +162,7 @@
 
     <template id="vendor-status-template">
         <fieldset class="vendor-status">
-            <legend data-field="product"></legend>
+            <legend><a data-field="product"></a></legend>
         </fieldset>
     </template>
 
@@ -204,7 +187,7 @@
     </template>
 
     <template id="currency-table-template">
-        <table><caption>BOC FX</caption>
+        <table><caption><img src="BOC.svg" alt="">BOC Exchange Rate</caption>
             <thead>
                 <tr>
                     <th scope="col">Currency</th>

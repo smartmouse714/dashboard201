@@ -15,17 +15,14 @@ const DAY_OFFSETS = TIMEZONES.map(({ label, timeZone }) => ({
     timeZone
 }));
 
-const getCity = zone => zone.split("/").at(-1);
-
 const cityElements = new Map();
 
 function cacheElements() {
-    for (const { timeZone } of TIMEZONES) {
-        const city = getCity(timeZone);
-        const element = document.getElementById(`${city}Clock`);
+    for (const { label } of TIMEZONES) {
+        const element = document.getElementById(`${label}Clock`);
 
         if (element) {
-            cityElements.set(city, element);
+            cityElements.set(label, element);
         }
     }
 }
@@ -132,8 +129,8 @@ function updateDayOffsetLabels(now) {
 }
 
 function updateClocks(now) {
-    for (const { timeZone } of TIMEZONES) {
-        const element = cityElements.get(getCity(timeZone));
+    for (const { label, timeZone } of TIMEZONES) {
+        const element = cityElements.get(label);
         if (!element) continue;
 
         element.dateTime = now.toISOString();

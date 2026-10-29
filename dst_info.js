@@ -132,8 +132,7 @@ function getDSTData(now) {
         nz: getDSTDetails(DST_RULES.NZ.start, DST_RULES.NZ.end, DST_ZONES.Auckland, now, true),
         au1: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.Sydney, now, true),
         au2: getDSTDetails(DST_RULES.AU.start, DST_RULES.AU.end, DST_ZONES.Adelaide, now, true),
-        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.London, now),
-        ca: getDSTDetails(DST_RULES.CA.start, DST_RULES.CA.end, DST_ZONES.Denver, now)
+        uk: getDSTDetails(DST_RULES.UK.start, DST_RULES.UK.end, DST_ZONES.London, now)
     };
 }
 
@@ -164,9 +163,8 @@ function createCountdownMeter(days) {
 }
 
 function refreshCountdowns(now = new Date()) {
-    const { au1, au2, ca, nz, uk } = getDSTData(now);
+    const { au1, au2, nz, uk } = getDSTData(now);
     const targets = [
-        { nextChange: ca.nextChange, selector: ".caCountdown" },
         { nextChange: uk.nextChange, selector: ".ukCountdown" },
         { nextChange: nz.nextChange, selector: ".nzCountdown" },
         { nextChange: au1.nextChange, selector: ".au1Countdown" },
@@ -213,7 +211,6 @@ function setNextText(elements, event, date, timeZone) {
 /* zone id → where its change text lives and which zone formats the dates */
 const DST_TEXT_ZONES = [
     { id: "uk", last: "#ukLastChange", next: "#ukNextChange", zone: DST_ZONES.London },
-    { id: "ca", last: "#caLastChange", next: "#caNextChange", zone: DST_ZONES.Denver },
     { id: "nz", last: "#nzLastChange", next: "#nzNextChange", zone: DST_ZONES.Auckland },
     { id: "au1", last: ".au1LastChange", next: ".au1NextChange", zone: DST_ZONES.Sydney },
     { id: "au2", last: ".au2LastChange", next: ".au2NextChange", zone: DST_ZONES.Adelaide }
@@ -221,7 +218,6 @@ const DST_TEXT_ZONES = [
 
 function updateDSTUI(details) {
     setDSTLegendState(["LondonClock"], details.uk.isDST);
-    setDSTLegendState(["DenverClock"], details.ca.isDST);
     setDSTLegendState(["AucklandClock"], details.nz.isDST);
     setDSTLegendState(["SydneyClock"], details.au1.isDST);
     setDSTLegendState(["AdelaideClock"], details.au2.isDST);

@@ -227,7 +227,6 @@ time {
 
 .au1Countdown,
 .au2Countdown,
-.caCountdown,
 .ukCountdown,
 .nzCountdown {
     display: block;
@@ -391,6 +390,24 @@ time {
     background-color: inherit;
     color: inherit;
     padding: 6px 0;
+}
+
+.column>fieldset.vendor-status>legend a {
+    color: inherit;
+    text-underline-offset: 0.15em;
+}
+
+#currencyRates caption {
+    text-align: center;
+    padding-bottom: 0.35em;
+}
+
+#currencyRates caption img {
+    display: inline-block;
+    height: 1.5em;
+    width: auto;
+    margin-right: 0.45em;
+    vertical-align: middle;
 }
 
 #latestVersion table,
