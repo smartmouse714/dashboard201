@@ -9,6 +9,13 @@ struggles.
 
 Support a SaaS product with international colleagues and clients.
 
+### Local Incidents
+
+The Local Incidents widget uses the
+[Victorian emergency proxy](https://vicemergency-proxy.ps4bp.workers.dev) to
+read the delta and events GeoJSON feeds without relying on the upstream feeds'
+browser CORS headers.
+
 ## Learning & Development
 
 ### CSS

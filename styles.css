@@ -449,7 +449,8 @@ time {
 }
 
 .release-details,
-.currency-details {
+.currency-details,
+.incident-details {
     width: 100%;
 }
 
@@ -461,8 +462,13 @@ time {
     justify-content: center;
 }
 
+.incident-details {
+    max-width: 100%;
+}
+
 .release-details summary,
-.currency-details summary {
+.currency-details summary,
+.incident-details summary {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -472,24 +478,28 @@ time {
 }
 
 .release-details summary::-webkit-details-marker,
-.currency-details summary::-webkit-details-marker {
+.currency-details summary::-webkit-details-marker,
+.incident-details summary::-webkit-details-marker {
     display: none;
 }
 
 .release-details summary::before,
-.currency-details summary::before {
+.currency-details summary::before,
+.incident-details summary::before {
     content: "▸";
     margin-right: 0.35em;
     transition: transform var(--transition);
 }
 
 .release-details[open] summary::before,
-.currency-details[open] summary::before {
+.currency-details[open] summary::before,
+.incident-details[open] summary::before {
     transform: rotate(90deg);
 }
 
 .release-details[open] summary .column-heading,
-.currency-details[open] summary .column-heading {
+.currency-details[open] summary .column-heading,
+.incident-details[open] summary .column-heading {
     color: var(--color-primary);
 }
 
@@ -498,6 +508,42 @@ time {
 .currency-details summary:hover .column-heading,
 .currency-details summary:focus-visible .column-heading {
     color: var(--color-primary);
+}
+
+.incident-details summary:hover .column-heading,
+.incident-details summary:focus-visible .column-heading {
+    color: var(--color-primary);
+}
+
+.incident-status {
+    margin: 0.25em 0;
+    color: var(--color-btn-text);
+    font-size: 0.75rem;
+}
+
+.incident-list {
+    list-style: none;
+    text-align: left;
+    max-height: 45vh;
+    overflow-y: auto;
+}
+
+.local-incident {
+    display: grid;
+    gap: 2px;
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.75rem;
+}
+
+.local-incident:last-child {
+    border-bottom: 0;
+}
+
+.local-incident [data-field="meta"],
+.local-incident time {
+    color: var(--color-btn-text);
+    font-size: 0.7rem;
 }
 
 #latestVersion th button {

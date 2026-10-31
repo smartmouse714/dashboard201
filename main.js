@@ -3,6 +3,7 @@ import { startDSTInfo } from "./dst_info.js";
 import { startHolidays } from "./holiday.js";
 import { startStatus } from "./status.js";
 import { startFX } from "./currency.js";
+import { startLocalIncidents } from "./local_incidents.js";
 
 const now = new Date();
 
@@ -11,3 +12,4 @@ startDSTInfo(now);
 startHolidays(now);
 startStatus();
 startFX();
+startLocalIncidents();

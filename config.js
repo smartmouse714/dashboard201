@@ -37,6 +37,7 @@ export const DST_ZONES = Object.fromEntries(
  *   NZ  – starts last Sunday of September, ends first Sunday of April
  *   AU  – starts first Sunday of October,  ends first Sunday of April
  *   UK  – starts last Sunday of March,     ends last Sunday of October
+ *   CA  - starts second Sunday of March,   ends first Sunday of November
  */
 export const DST_RULE_DEFS = {
     AU: {

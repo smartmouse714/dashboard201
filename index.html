@@ -24,6 +24,15 @@
                     <button id="holidayNext" aria-label="Next month" title="Next month">›</button>
                 </nav>
             </section>
+            <details class="incident-details" open>
+                <summary>
+                    <h2 class="column-heading">Local Incidents</h2>
+                </summary>
+                <p id="localIncidentsStatus" class="incident-status" role="status" aria-live="polite">
+                    Checking for local incidents…
+                </p>
+                <ul id="localIncidentsList" class="incident-list"></ul>
+            </details>
         </section>
         <section class="column">
             <h1 class="column-heading">Australia<button aria-label="About AU DST" command="show-modal"
@@ -167,7 +176,8 @@
     </template>
 
     <template id="release-table-template">
-        <table><caption>Cool Tools</caption>
+        <table>
+            <caption>Cool Tools</caption>
             <thead>
                 <tr>
                     <th data-sort="app" aria-sort="none"><button type="button">Application</button></th>
@@ -187,7 +197,8 @@
     </template>
 
     <template id="currency-table-template">
-        <table><caption><img src="BOC.svg" alt="">BOC Exchange Rate</caption>
+        <table>
+            <caption><img src="BOC.svg" alt="Bank of China">BOC Exchange Rate</caption>
             <thead>
                 <tr>
                     <th scope="col">Currency</th>
@@ -196,6 +207,14 @@
             </thead>
             <tbody></tbody>
         </table>
+    </template>
+
+    <template id="local-incident-template">
+        <li class="local-incident">
+            <strong data-field="name"></strong>
+            <span data-field="meta"></span>
+            <time data-field="updated"></time>
+        </li>
     </template>
 
     <!-- Cloudflare Web Analytics -->
