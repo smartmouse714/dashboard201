@@ -5,7 +5,7 @@ const EVENTS_URL = "https://vicemergency-proxy.ps4bp.workers.dev/events-geojson.
 const CACHE_KEY = "localIncidentsCache";
 const CHECK_INTERVAL = 5 * 60 * 1000;
 const MAX_DISPLAYED_INCIDENTS = 5;
-const LOCAL_AREAS = ["frankston", "franksont", "monash", "knox"];
+const LOCAL_AREAS = ["frankston", "knox", "monash"];
 let refreshInProgress = false;
 
 function readCache() {
@@ -88,7 +88,7 @@ function incidentCountMessage(events, prefix) {
     const localEvents = getLocalIncidents(events);
     const displayedCount = Math.min(localEvents.length, MAX_DISPLAYED_INCIDENTS);
     if (localEvents.length > MAX_DISPLAYED_INCIDENTS) {
-        return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in Frankston, Monash, or Knox.`;
+        return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in Frankston, Knox, or Monash.`;
     }
 
     return `${prefix} Showing ${displayedCount} incident${displayedCount === 1 ? "" : "s"} in Frankston, Monash, or Knox.`;
@@ -104,7 +104,7 @@ async function fetchJson(url) {
         throw new Error(`Request failed with HTTP ${response.status}`);
     }
     if (!response.headers.get("Content-Type")?.includes("json")) {
-        throw new Error("The incident feed endpoint did not return JSON. Deploy the Cloudflare Pages Function.");
+        throw new Error("The incident feed endpoint did not return JSON.");
     }
     return response.json();
 }
