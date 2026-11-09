@@ -1,12 +1,26 @@
 import { fromTemplate, fill } from "./dom-utils.js";
+import { LOCAL_INCIDENTS } from "./config.js";
 
-const DELTA_URL = "https://vicemergency-proxy.ps4bp.workers.dev/osom-delta.json";
-const EVENTS_URL = "https://vicemergency-proxy.ps4bp.workers.dev/events-geojson.json";
-const CACHE_KEY = "localIncidentsCache";
-const CHECK_INTERVAL = 5 * 60 * 1000;
-const MAX_DISPLAYED_INCIDENTS = 5;
-const LOCAL_AREAS = ["frankston", "knox", "monash"];
+const {
+    deltaUrl: DELTA_URL,
+    eventsUrl: EVENTS_URL,
+    cacheKey: CACHE_KEY,
+    checkInterval: CHECK_INTERVAL,
+    maxDisplayed: MAX_DISPLAYED_INCIDENTS,
+    locations: LOCAL_AREAS,
+    eventTypes: EVENT_TYPES
+} = LOCAL_INCIDENTS;
+
 let refreshInProgress = false;
+
+/* "frankston" → "Frankston", joined as "Frankston, Knox, or Monash". */
+const LOCATION_LABEL = (() => {
+    const names = LOCAL_AREAS.map(
+        (area) => area.charAt(0).toUpperCase() + area.slice(1)
+    );
+    if (names.length < 2) return names.join("");
+    return `${names.slice(0, -1).join(", ")}, or ${names.at(-1)}`;
+})();
 
 function readCache() {
     const stored = localStorage.getItem(CACHE_KEY);
@@ -48,23 +62,33 @@ function isInLocalArea(event) {
     return LOCAL_AREAS.some((area) => location.includes(area));
 }
 
+function isConfiguredType(event) {
+    if (!EVENT_TYPES.length) return true;
+    if (typeof event.category !== "string") return false;
+    const category = event.category.toLocaleLowerCase();
+    return EVENT_TYPES.some((type) => category.includes(
+        type.toLocaleLowerCase()
+    ));
+}
+
 function getLocalIncidents(events) {
-    return events.filter(isInLocalArea);
+    return events.filter((event) =>
+        isInLocalArea(event) && isConfiguredType(event)
+    );
 }
 
 function createIncident(event) {
     const item = fromTemplate("local-incident-template");
-    const when = new Date(event.updatedAt);
-    const meta = [event.category, event.status, event.location]
-        .filter(Boolean)
-        .join(" · ");
 
     fill(item, {
         '[data-field="name"]': event.name,
-        '[data-field="meta"]': meta
+        '[data-field="meta"]': [event.category, event.status, event.location]
+            .filter(Boolean)
+            .join(" · ")
     });
 
     const time = item.querySelector('[data-field="updated"]');
+    const when = new Date(event.updatedAt);
     time.dateTime = when.toISOString();
     time.textContent = `Updated ${when.toLocaleString("en-AU", {
         day: "numeric",
@@ -88,10 +112,10 @@ function incidentCountMessage(events, prefix) {
     const localEvents = getLocalIncidents(events);
     const displayedCount = Math.min(localEvents.length, MAX_DISPLAYED_INCIDENTS);
     if (localEvents.length > MAX_DISPLAYED_INCIDENTS) {
-        return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in Frankston, Knox, or Monash.`;
+        return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in ${LOCATION_LABEL}.`;
     }
 
-    return `${prefix} Showing ${displayedCount} incident${displayedCount === 1 ? "" : "s"} in Frankston, Monash, or Knox.`;
+    return `${prefix} Showing ${displayedCount} incident${displayedCount === 1 ? "" : "s"} in ${LOCATION_LABEL}.`;
 }
 
 function setStatus(message) {
@@ -159,6 +183,7 @@ async function refreshLocalIncidents() {
             }))
             .filter((event) => (
                 isInLocalArea(event) &&
+                isConfiguredType(event) &&
                 event.updatedAt !== null &&
                 (!cache || event.updatedAt > previousTime)
             ))

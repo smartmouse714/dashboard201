@@ -23,8 +23,11 @@ export const TIMEZONES = [
 ];
 
 /**
- * DST zone → IANA timezone, derived from the TIMEZONES entries that opt in
- * with a dstRule key.
+ * DST zone → IANA timezone, derived from the TIMEZONES entries with a dstRule key.
+ * DST_ZONES = { Sydney: "Australia/Sydney",
+ *               Adelaide: "Australia/Adelaide",
+ *               Auckland: "Pacific/Auckland",
+ *               London: "Europe/London" }
  */
 export const DST_ZONES = Object.fromEntries(
     TIMEZONES
@@ -37,7 +40,6 @@ export const DST_ZONES = Object.fromEntries(
  *   NZ  – starts last Sunday of September, ends first Sunday of April
  *   AU  – starts first Sunday of October,  ends first Sunday of April
  *   UK  – starts last Sunday of March,     ends last Sunday of October
- *   CA  - starts second Sunday of March,   ends first Sunday of November
  */
 export const DST_RULE_DEFS = {
     AU: {
@@ -140,6 +142,24 @@ export const VENDOR_CATALOG = [
             WEBEX_STATES[status.indicator] ?? ["Status Unknown", "status-unknown"]
     }
 ];
+
+/**
+ * Local incidents (VicEmergency proxy feed).
+ *   locations  – case-insensitive substrings matched against each event's
+ *                location; add or remove entries to change coverage.
+ *   eventTypes – case-insensitive substrings matched against the event
+ *                category (e.g. "fire", "earthquake"). An empty list keeps
+ *                every type; populated, it acts as a whitelist.
+ */
+export const LOCAL_INCIDENTS = {
+    deltaUrl: "https://vicemergency-proxy.ps4bp.workers.dev/osom-delta.json",
+    eventsUrl: "https://vicemergency-proxy.ps4bp.workers.dev/events-geojson.json",
+    cacheKey: "localIncidentsCache",
+    checkInterval: 60 * 60 * 1000, // hourly
+    maxDisplayed: 5,
+    locations: ["frankston", "knox", "monash"],
+    eventTypes: ["asthma", "earthquake"]
+};
 
 /**
  * FX

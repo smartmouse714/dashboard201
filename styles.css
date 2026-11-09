@@ -540,7 +540,7 @@ time {
     border-bottom: 0;
 }
 
-.local-incident [data-field="meta"],
+.local-incident small,
 .local-incident time {
     color: var(--color-btn-text);
     font-size: 0.7rem;
