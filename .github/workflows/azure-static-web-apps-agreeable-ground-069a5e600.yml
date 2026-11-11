@@ -31,7 +31,8 @@ jobs:
         run: |
           rm -fr src
           mkdir -p src
-          cp index.html *.{js,css,svg} favicon.ico src/;
+          cp index.html *.{css,svg} favicon.ico src/
+          cp -r js src/
     
       - name: Build And Deploy
         id: builddeploy

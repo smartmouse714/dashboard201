@@ -19,12 +19,13 @@ function createReleaseRow({ title, version = "Unknown", published = "—" }) {
     });
 }
 
-function createVendorStatus(product, message, cssClass, statusUrl) {
+function createVendorStatus(product, message, cssClass, statusUrl, tooltip) {
     const status = fromTemplate("vendor-status-template");
+    const summary = tooltip ?? message;
 
     status.className = `vendor-status ${cssClass}`;
-    status.setAttribute("aria-label", `${product}: ${message}`);
-    status.title = message;
+    status.title = summary;
+    status.setAttribute("aria-label", `${product}: ${summary}`);
 
     fill(status, {
         '[data-field="product"]': product
@@ -65,17 +66,18 @@ function getReleaseData() {
 /**
  * Fetch one vendor status source and return plain status data.
  * The `pick` adapter (provided per vendor in config.js) decouples this
- * fetcher from each provider's payload shape. On any failure the data
- * falls back to "Status Unknown".
+ * fetcher from each provider's payload shape, yielding
+ * [message, cssClass, tooltip]. On any failure the data falls back
+ * to "Status Unknown".
  */
 async function fetchVendorStatus({ product, url, statusUrl, pick }) {
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        const [message, cssClass] = pick(await response.json());
+        const [message, cssClass, tooltip] = pick(await response.json());
 
-        return { product, message, cssClass, statusUrl };
+        return { product, message, cssClass, tooltip, statusUrl };
     } catch {
         return {
             product,
@@ -198,8 +200,10 @@ async function updateVendorStatus() {
     const fragment = document.createDocumentFragment();
 
     (await getVendorData())
-        .forEach(({ product, message, cssClass, statusUrl }) =>
-            fragment.appendChild(createVendorStatus(product, message, cssClass, statusUrl))
+        .forEach(({ product, message, cssClass, tooltip, statusUrl }) =>
+            fragment.appendChild(
+                createVendorStatus(product, message, cssClass, statusUrl, tooltip)
+            )
         );
 
     swapRendered(

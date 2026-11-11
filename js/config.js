@@ -100,8 +100,9 @@ export const GH_CATALOG = Object.entries(repos).map(([title, repo]) => ({
 }));
 /**
  * Vendor payloads differ per provider, so each entry carries its own
- * `pick` adapter returning [message, cssClass] — the same contract as
- * the release sources above.
+ * `pick` adapter returning [message, cssClass, tooltip] — the same
+ * contract as the release sources above. tooltip is optional and
+ * defaults to the message.
  */
 const STATUSPAGE_CLASS = {
     none: "status-green",
@@ -110,11 +111,34 @@ const STATUSPAGE_CLASS = {
     critical: "status-red"
 };
 
-/* TeamViewer publishes an Atlassian Statuspage payload */
-const statuspagePick = ({ status }) => [
-    status.description,
-    STATUSPAGE_CLASS[status.indicator] ?? "status-unknown"
-];
+/* "under_maintenance" → "Under Maintenance" */
+const humanizeIndicator = (indicator) =>
+    indicator
+        .split(/[\s_-]+/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+/* TeamViewer publishes an Atlassian Statuspage payload. Indicators the
+   class map doesn't know (e.g. "maintenance") are presented as an
+   amber box rather than collapsing into "Status Unknown"; the full
+   state text surfaces as the box's hover tooltip. */
+const statuspagePick = ({ status }) => {
+    const indicator = String(status.indicator ?? "").toLowerCase();
+    if (!indicator) return ["Status Unknown", "status-unknown"];
+
+    if (indicator in STATUSPAGE_CLASS) {
+        const description = status.description || humanizeIndicator(indicator);
+        return [description, STATUSPAGE_CLASS[indicator]];
+    }
+
+    const label = humanizeIndicator(indicator);
+    const description = status.description || label;
+    return [
+        label,
+        "status-amber",
+        description === label ? label : `${label} — ${description}`
+    ];
+};
 
 /* the proxy collapses maintenance, degraded performance and partial
    outage into a single yellow indicator, so name all three candidates */
@@ -145,11 +169,13 @@ export const VENDOR_CATALOG = [
 
 /**
  * Local incidents (VicEmergency proxy feed).
- *   locations  – case-insensitive substrings matched against each event's
- *                location; add or remove entries to change coverage.
- *   eventTypes – case-insensitive substrings matched against the event
- *                category (e.g. "fire", "earthquake"). An empty list keeps
- *                every type; populated, it acts as a whitelist.
+ *   locations     – case-insensitive substrings matched against each event's
+ *                   location; add or remove entries to change coverage.
+ *   eventTypes    – case-insensitive substrings matched against the event
+ *                   category (e.g. "fire", "earthquake"). An empty list keeps
+ *                   every type; populated, it acts as a whitelist.
+ *   statewideTypes – eventTypes shown wherever they occur, ignoring the
+ *                   location filter (e.g. earthquakes).
  */
 export const LOCAL_INCIDENTS = {
     deltaUrl: "https://vicemergency-proxy.ps4bp.workers.dev/osom-delta.json",
@@ -158,7 +184,8 @@ export const LOCAL_INCIDENTS = {
     checkInterval: 60 * 60 * 1000, // hourly
     maxDisplayed: 5,
     locations: ["frankston", "knox", "monash"],
-    eventTypes: ["asthma", "earthquake"]
+    eventTypes: ["asthma", "earthquake"],
+    statewideTypes: ["earthquake"]
 };
 
 /**

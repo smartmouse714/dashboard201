@@ -8,19 +8,27 @@ const {
     checkInterval: CHECK_INTERVAL,
     maxDisplayed: MAX_DISPLAYED_INCIDENTS,
     locations: LOCAL_AREAS,
-    eventTypes: EVENT_TYPES
+    eventTypes: EVENT_TYPES,
+    statewideTypes: STATEWIDE_TYPES
 } = LOCAL_INCIDENTS;
 
 let refreshInProgress = false;
 
-/* "frankston" → "Frankston", joined as "Frankston, Knox, or Monash". */
-const LOCATION_LABEL = (() => {
-    const names = LOCAL_AREAS.map(
-        (area) => area.charAt(0).toUpperCase() + area.slice(1)
+function labelize(names) {
+    const labels = names.map(
+        (name) => name.charAt(0).toUpperCase() + name.slice(1)
     );
-    if (names.length < 2) return names.join("");
-    return `${names.slice(0, -1).join(", ")}, or ${names.at(-1)}`;
-})();
+    if (labels.length < 2) return labels.join("");
+    return `${labels.slice(0, -1).join(", ")}, or ${labels.at(-1)}`;
+}
+
+/* "frankston" → "Frankston", joined as "Frankston, Knox, or Monash". */
+const LOCATION_LABEL = labelize(LOCAL_AREAS);
+
+/* status tail: statewide types are reported wherever they occur */
+const AREA_PHRASE = STATEWIDE_TYPES.length
+    ? `${LOCATION_LABEL}, plus statewide ${STATEWIDE_TYPES.join(" or ")}`
+    : LOCATION_LABEL;
 
 function readCache() {
     const stored = localStorage.getItem(CACHE_KEY);
@@ -71,9 +79,22 @@ function isConfiguredType(event) {
     ));
 }
 
+/* statewide types (e.g. earthquakes) are reported wherever they hit */
+function isStatewideType(event) {
+    if (typeof event.category !== "string") return false;
+    const category = event.category.toLocaleLowerCase();
+    return STATEWIDE_TYPES.some((type) => category.includes(
+        type.toLocaleLowerCase()
+    ));
+}
+
+function isInCoverage(event) {
+    return isInLocalArea(event) || isStatewideType(event);
+}
+
 function getLocalIncidents(events) {
     return events.filter((event) =>
-        isInLocalArea(event) && isConfiguredType(event)
+        isConfiguredType(event) && isInCoverage(event)
     );
 }
 
@@ -112,10 +133,10 @@ function incidentCountMessage(events, prefix) {
     const localEvents = getLocalIncidents(events);
     const displayedCount = Math.min(localEvents.length, MAX_DISPLAYED_INCIDENTS);
     if (localEvents.length > MAX_DISPLAYED_INCIDENTS) {
-        return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in ${LOCATION_LABEL}.`;
+        return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in ${AREA_PHRASE}.`;
     }
 
-    return `${prefix} Showing ${displayedCount} incident${displayedCount === 1 ? "" : "s"} in ${LOCATION_LABEL}.`;
+    return `${prefix} Showing ${displayedCount} incident${displayedCount === 1 ? "" : "s"} in ${AREA_PHRASE}.`;
 }
 
 function setStatus(message) {
@@ -182,8 +203,8 @@ async function refreshLocalIncidents() {
                 updatedAt: eventUpdatedAt(properties)
             }))
             .filter((event) => (
-                isInLocalArea(event) &&
                 isConfiguredType(event) &&
+                isInCoverage(event) &&
                 event.updatedAt !== null &&
                 (!cache || event.updatedAt > previousTime)
             ))
