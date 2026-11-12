@@ -136,7 +136,7 @@ function incidentCountMessage(events, prefix) {
         return `${prefix} Showing the ${MAX_DISPLAYED_INCIDENTS} newest of ${localEvents.length} incidents in ${AREA_PHRASE}.`;
     }
 
-    return `${prefix} Showing ${displayedCount} incident${displayedCount === 1 ? "" : "s"} in ${AREA_PHRASE}.`;
+    return `${prefix} Showing ${displayedCount} incident${displayedCount < 2 ? "" : "s"} in ${AREA_PHRASE}.`;
 }
 
 function setStatus(message) {
